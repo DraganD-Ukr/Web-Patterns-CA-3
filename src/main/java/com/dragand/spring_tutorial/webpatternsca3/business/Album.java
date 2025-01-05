@@ -11,8 +11,9 @@ import java.util.Date;
 @Getter
 @Setter
 @AllArgsConstructor
-@Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Data
+@Builder
 public class Album {
 
     @EqualsAndHashCode.Include
