@@ -1,6 +1,7 @@
 package com.dragand.spring_tutorial.webpatternsca3.persistence;
 
 import com.dragand.spring_tutorial.webpatternsca3.business.Album;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
 
     public AlbumDaoImpl(){
@@ -54,12 +56,12 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
                     result.add(album);
                 }
             } catch (SQLException e) {
-                System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+                log.error("Error retrieving albums by ArtistID: {}", artistId, e);
             }
 
 
         } catch (SQLException e) {
-            System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+            log.error("Error accessing the database: ", e);
         }
 
         return result;
@@ -100,12 +102,12 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
                 }
 
             } catch (SQLException e) {
-                System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+                log.error("Error retrieving albums where artist name like: {}", artistName, e);
             }
 
 
         } catch (SQLException e) {
-            System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+            log.error("Error accessing the database: ", e);
         }
 
         return result;
@@ -147,12 +149,12 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
                 }
 
             } catch (SQLException e) {
-                System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+                log.error("Error retrieving albums by artist name: {}", artistName, e);
             }
 
 
         } catch (SQLException e) {
-            System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+            log.error("Error accessing the database: ", e);
         }
 
         return result;
@@ -182,11 +184,11 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
                 }
 
             } catch (SQLException e) {
-                System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+                log.error("Error retrieving album by ID: {}", albumId, e);
             }
 
         } catch (SQLException e) {
-            System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+            log.error("Error accessing the database: ", e);
         }
         return album;
     }
