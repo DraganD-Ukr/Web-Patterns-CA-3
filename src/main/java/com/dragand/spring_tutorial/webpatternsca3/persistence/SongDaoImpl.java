@@ -191,6 +191,16 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
         return new ArrayList<>();
     }
 
+    @Override
+    public boolean addSong(Song song) {
+        return false;
+    }
+
+    @Override
+    public boolean deleteSong(int id) {
+        return false;
+    }
+
 //Refactory methods (these methods are used in case of repetitive code from previous application)
     /**
      * Maps a single row of the ResultSet to a Song object.

@@ -32,4 +32,17 @@ public interface SongDAO {
 
     public List<Song> getSongsInPlaylistByPlaylistName(String name);
 
+    //Should be in the ratings table?
+
+//    public Song getTopRatedSong();
+//
+//    public Song getMostPopularSong();
+//
+
+    //Database Data Entry/Edit query
+
+    public boolean addSong(Song song);
+
+    public boolean deleteSong(int id);
+
 }
