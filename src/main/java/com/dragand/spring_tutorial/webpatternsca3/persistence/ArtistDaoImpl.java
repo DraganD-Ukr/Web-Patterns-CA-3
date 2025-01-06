@@ -1,6 +1,8 @@
 package com.dragand.spring_tutorial.webpatternsca3.persistence;
 
 import com.dragand.spring_tutorial.webpatternsca3.business.Artist;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,14 +14,19 @@ import java.util.List;
 /**
  * @Author: Dmytro Drahan
  */
+@Slf4j
+@Repository
 public class ArtistDaoImpl extends MySQLDao implements ArtistDAO {
 
 
+    public ArtistDaoImpl(){
+        super();
+    }
 
-    /**
-     * Get the connection from the superclass by passing the database name
-     * @param dbName - the name of the database
-     */
+    public ArtistDaoImpl(Connection conn){
+        super(conn);
+    }
+
     public ArtistDaoImpl(String dbName) {
         super(dbName);
     }
@@ -48,12 +55,12 @@ public class ArtistDaoImpl extends MySQLDao implements ArtistDAO {
                             .build();
                 }
             } catch (SQLException e) {
-                System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+                log.error("Error retrieving artist by ID: {}", id, e);
             }
 
 
         } catch (SQLException e) {
-            System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+            log.error("Error accessing the database: ", e);
         }
         return artist;
 
@@ -84,12 +91,12 @@ public class ArtistDaoImpl extends MySQLDao implements ArtistDAO {
                 }
 
             } catch (SQLException e) {
-                System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+                log.error("Error retrieving artist by name: {}", query, e);
             }
 
 
         } catch (SQLException e) {
-            System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+            log.error("Error accessing the database: ", e);
         }
         return artist;
 
@@ -126,12 +133,12 @@ public class ArtistDaoImpl extends MySQLDao implements ArtistDAO {
                 }
 
             } catch (SQLException e) {
-                System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+                log.error("Error retrieving artists where name like: {}", artistName, e);
             }
 
 
         } catch (SQLException e) {
-            System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+            log.error("Error accessing the database: ", e);
         }
 
         return result;
@@ -141,8 +148,6 @@ public class ArtistDaoImpl extends MySQLDao implements ArtistDAO {
 
     @Override
     public List<Artist> getAllArtists() {
-
-
 
         Artist artist;
         List<Artist> result = new ArrayList<>();
@@ -167,12 +172,12 @@ public class ArtistDaoImpl extends MySQLDao implements ArtistDAO {
                 }
 
             } catch (SQLException e) {
-                System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+                log.error("Error retrieving all artists: {}", e);
             }
 
 
         } catch (SQLException e) {
-            System.out.println("Exception occurred in the getArtistById() method: " + e.getMessage());
+            log.error("Error accessing the database: ", e);
         }
 
         return result;
