@@ -18,31 +18,31 @@ public interface SongDAO {
 
     //Search Querry methods
 
-    public Song findSongByTitle(String title);
+     Song findSongByTitle(String title);
 
-    public List<Song> getAllSongsByTitle(String title);
+     List<Song> getAllSongsByTitle(String title);
 
-    public List<Song> findAllSongsFromArtist(String artist);
+     List<Song> findAllSongsFromArtist(String artist);
 
-    public List<Song> findAllSongsFromArtistById(int ArtistID);
+     List<Song> findAllSongsFromArtistById(int ArtistID);
 
-    public List<Song> findAllFromAlbumByName(String albumName);
+     List<Song> findAllFromAlbumByName(String albumName);
 
-    public List<Song> findAllFromAlbumById(int albumId);
+     List<Song> findAllFromAlbumById(int albumId);
 
-    public List<Song> getSongsInPlaylistByPlaylistName(String name);
+     List<Song> getSongsInPlaylistByPlaylistName(String name);
 
     //Should be in the ratings table?
 
-//    public Song getTopRatedSong();
+//     Song getTopRatedSong();
 //
-//    public Song getMostPopularSong();
+//     Song getMostPopularSong();
 //
 
     //Database Data Entry/Edit query
 
-    public boolean addSong(Song song);
+     boolean addSong(Song song);
 
-    public boolean deleteSong(int id);
+     boolean deleteSong(int id);
 
 }
