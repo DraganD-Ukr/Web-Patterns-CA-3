@@ -191,17 +191,53 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
         return new ArrayList<>();
     }
 
+    /**
+     * Adds a new song to the Songs table The provided Song object is mapped to the SQL
+     * parameters, and the song is inserted into the database
+     *
+     * @param song The Song object to be added.
+     * @return True if the song was added successfully, otherwise false.
+     */
     @Override
     public boolean addSong(Song song) {
+        String sql = "INSERT INTO Songs (title, albumID, artistID, length, ratingCount, averageRating, ratingsSum) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, song.getTitle());
+            ps.setInt(2, song.getAlbumID());
+            ps.setInt(3, song.getArtistID());
+            ps.setTime(4, Time.valueOf(song.getLength()));
+            ps.setInt(5, song.getRatingCount());
+            ps.setDouble(6, song.getAverageRating());
+            ps.setInt(7, song.getRatingsSum());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logError("An error occurred while adding the song", e);
+        }
         return false;
     }
 
+    /**
+     * Deletes a song from the Songs table by its song ID.
+     *
+     * @param id The song's ID to be deleted.
+     * @return True if the song was deleted successfully, otherwise false.
+     */
     @Override
     public boolean deleteSong(int id) {
+        String sql = "DELETE FROM Songs WHERE songID = ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logError("An error occurred while deleting the song", e);
+        }
         return false;
     }
 
-//Refactory methods (these methods are used in case of repetitive code from previous application)
+//Refactor methods (these methods are used in case of repetitive code from previous application)
     /**
      * Maps a single row of the ResultSet to a Song object.
      *
