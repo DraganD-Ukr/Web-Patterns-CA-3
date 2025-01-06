@@ -68,14 +68,52 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
         return new ArrayList<>();
     }
 
+    /**
+     * Fetches all songs from a specific artist by name It joins the Songs table with
+     * the Artists table to get the songs associated with the artist name.
+     *
+     * @param artist The name of the artist whose songs need to be fetched.
+     * @return A list of Song objects belonging to the artist.
+     */
     @Override
     public List<Song> findAllSongsFromArtist(String artist) {
-        return List.of();
+        String sql = "SELECT s.songID, s.title, s.albumID, s.artistID, s.length, s.ratingCount, s.averageRating, s.ratingsSum " +
+                "FROM Songs s " +
+                "JOIN Artists a ON s.artistID = a.artistID " +
+                "WHERE a.name = ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, artist);
+            try (ResultSet rs = ps.executeQuery()) {
+                return mapSongsFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            logError("An error occurred while fetching songs from the artist", e);
+        }
+        return new ArrayList<>();
     }
 
+    /**
+     * Finds all songs from an artist by their artist ID. This method performs a query
+     * on the Songs table filtered by the given artist's ID.
+     *
+     * @param ArtistID The artist's ID to filter songs by.
+     * @return A list of Song objects from the specified artist.
+     */
     @Override
     public List<Song> findAllSongsFromArtistById(int ArtistID) {
-        return List.of();
+        String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum " +
+                "FROM Songs WHERE artistID = ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, ArtistID);
+            try (ResultSet rs = ps.executeQuery()) {
+                return mapSongsFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            logError("An error occurred while fetching songs by artist ID", e);
+        }
+        return new ArrayList<>();
     }
 
     @Override
