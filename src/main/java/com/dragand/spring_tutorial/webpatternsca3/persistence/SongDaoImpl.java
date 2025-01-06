@@ -238,9 +238,28 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
     }
 
     //Extended functionality
+    /**
+     * Retrieves a limited number of songs based on their name. This can be used in places only limited results need to be shown.
+     *
+     * @param name The partial or full name of the song to search for.
+     * @param limit The maximum number of songs to return.
+     * @return A list of Song objects matching the name, limited to the specified number.
+     */
     @Override
     public List<Song> getLimitedSongsByName(String name, int limit) {
-        return List.of();
+        String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum " +
+                "FROM Songs WHERE title LIKE ? LIMIT ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, "%" + name + "%"); // Case-insensitive partial match
+            ps.setInt(2, limit); // Set the maximum number of results to return
+            try (ResultSet rs = ps.executeQuery()) {
+                return mapSongsFromResultSet(rs); // Reuse existing mapping method
+            }
+        } catch (SQLException e) {
+            logError("An error occurred while fetching a limited number of songs by name", e);
+        }
+        return new ArrayList<>();
     }
 
 //Refactor methods (these methods are used in case of repetitive code from previous application)
