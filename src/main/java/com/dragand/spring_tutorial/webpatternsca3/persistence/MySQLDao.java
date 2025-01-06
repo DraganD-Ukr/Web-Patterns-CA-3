@@ -15,7 +15,8 @@ public class MySQLDao {
     private Properties properties;
     private Connection conn;
 
-    public MySQLDao(){
+    public MySQLDao() {
+        loadProperties("database.properties"); // Default file name
     }
 
     public MySQLDao(Connection conn){
@@ -24,16 +25,7 @@ public class MySQLDao {
 
     public MySQLDao(String propertiesFilename){
         properties = new Properties();
-        try {
-            // Get the path to the specified properties file
-            String rootPath = Thread.currentThread().getContextClassLoader().getResource(propertiesFilename).getPath();
-            // Load in all key-value pairs from properties file
-            properties.load(new FileInputStream(rootPath));
-        }catch(IOException e){
-            log.error("An exception occurred when attempting to load properties from \"{}\": {}", propertiesFilename, e.getMessage());
-//            e.printStackTrace();
-        }
-
+        loadProperties(propertiesFilename);
     }
 
     public Connection getConnection(){
@@ -72,6 +64,19 @@ public class MySQLDao {
             log.error("{}: An SQLException occurred while trying to close the database connection.", LocalDateTime.now());
             log.error("Error: {}", e.getMessage());
 //            e.printStackTrace();
+        }
+    }
+
+    private void loadProperties(String propertiesFilename) {
+        properties = new Properties();
+        try {
+            String rootPath = Thread.currentThread()
+                    .getContextClassLoader()
+                    .getResource(propertiesFilename)
+                    .getPath();
+            properties.load(new FileInputStream(rootPath));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load properties from: " + propertiesFilename, e);
         }
     }
 }

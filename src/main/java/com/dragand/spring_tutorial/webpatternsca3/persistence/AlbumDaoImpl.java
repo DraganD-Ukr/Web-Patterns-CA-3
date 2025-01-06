@@ -2,6 +2,7 @@ package com.dragand.spring_tutorial.webpatternsca3.persistence;
 
 import com.dragand.spring_tutorial.webpatternsca3.business.Album;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 @Slf4j
 public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
 
