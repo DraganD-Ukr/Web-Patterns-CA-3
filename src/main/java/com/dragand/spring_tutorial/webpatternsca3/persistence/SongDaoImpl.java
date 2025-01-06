@@ -94,7 +94,7 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
     }
 
     /**
-     * Finds all songs from an artist by their artist ID. This method performs a query
+     * Finds all songs from an artist by their artist ID This method performs a query
      * on the Songs table filtered by the given artist's ID.
      *
      * @param ArtistID The artist's ID to filter songs by.
@@ -143,7 +143,7 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
 
     /**
      * Fetches all songs from an album using the album's ID. This is useful
-     * filtering songs by album ID directly from the Songs table.
+     * filtering songs by album ID from the Songs table.
      *
      * @param albumId The album's ID to filter songs by.
      * @return A list of Song objects in the specified album.
@@ -165,9 +165,30 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
     }
 
 
+    /**
+     * Fetches all songs that belong to a playlist identified by its name.
+     * Uses a JOIN between the Songs, PlaylistSongs, and Playlists tables.
+     *
+     * @param name The playlist's name to fetch songs.
+     * @return A list of Song objects that are in the playlist.
+     */
     @Override
     public List<Song> getSongsInPlaylistByPlaylistName(String name) {
-        return List.of();
+        String sql = "SELECT s.songID, s.title, s.albumID, s.artistID, s.length, s.ratingCount, s.averageRating, s.ratingsSum " +
+                "FROM Songs s " +
+                "JOIN PlaylistSongs ps ON s.songID = ps.songID " +
+                "JOIN Playlists p ON ps.playlistID = p.playlistID " +
+                "WHERE p.name = ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                return mapSongsFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            logError("An error occurred while fetching songs from the playlist", e);
+        }
+        return new ArrayList<>();
     }
 
 //Refactory methods (these methods are used in case of repetitive code from previous application)
