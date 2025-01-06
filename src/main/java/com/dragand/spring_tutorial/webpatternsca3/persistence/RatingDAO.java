@@ -11,7 +11,7 @@ import java.util.List;
  * @author Jo Art Mahilaga
  */
 
-public interface RatingDao {
+public interface RatingDAO {
 
     /**
      * Adds a rating to the database

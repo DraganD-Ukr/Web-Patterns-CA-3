@@ -7,7 +7,7 @@ import com.dragand.spring_tutorial.webpatternsca3.business.User;
  *
  * @author Jo Art Mahilaga
  */
-public interface UserDao {
+public interface UserDAO {
 
     /**
      * Adds a user to the database
