@@ -128,7 +128,7 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
         String sql = "SELECT s.songID, s.title, s.albumID, s.artistID, s.length, s.ratingCount, s.averageRating, s.ratingsSum " +
                 "FROM Songs s " +
                 "JOIN Albums a ON s.albumID = a.albumID " +
-                "WHERE a.name = ?";
+                "WHERE a.title = ?";
         try (Connection con = super.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, albumName);
