@@ -45,4 +45,8 @@ public interface SongDAO {
 
      boolean deleteSong(int id);
 
+     // Extended Functionality
+
+    //Top Rated songs for dropdowns with list limiter
+     List<Song> getLimitedSongsByName(String name, int limit);
 }

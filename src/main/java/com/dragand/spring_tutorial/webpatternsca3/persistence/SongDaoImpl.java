@@ -237,6 +237,12 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
         return false;
     }
 
+    //Extended functionality
+    @Override
+    public List<Song> getLimitedSongsByName(String name, int limit) {
+        return List.of();
+    }
+
 //Refactor methods (these methods are used in case of repetitive code from previous application)
     /**
      * Maps a single row of the ResultSet to a Song object.
