@@ -13,7 +13,8 @@ import java.sql.SQLException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = NullPointerException.class)
-    public String nullPointerHandler(Model model) {
+    public String nullPointerHandler(Model model, NullPointerException ex) {
+        log.error("NullPointerException occurred: ", ex);
         model.addAttribute("err", "NullPointerException");
         return "error";
     }
@@ -21,6 +22,7 @@ public class GlobalExceptionHandler {
     //Global exception handler (for all exceptions including unexpected ones)
     @ExceptionHandler(value = Exception.class)
     public String allOtherExceptionHandler(Model model, Exception ex) {
+        log.error("An exception occurred: ", ex);
         model.addAttribute("errType", ex.getClass());
         model.addAttribute("errMsg", ex.getMessage());
         return "error";
