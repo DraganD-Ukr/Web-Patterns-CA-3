@@ -116,15 +116,54 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
         return new ArrayList<>();
     }
 
+    /**
+     * Retrieves all songs from an album using the album's name It joins the Songs
+     * table with the Albums table to find the songs associated with the album name
+     *
+     * @param albumName The name of the album to search  .
+     * @return A list of Song objects from the album.
+     */
     @Override
     public List<Song> findAllFromAlbumByName(String albumName) {
-        return List.of();
+        String sql = "SELECT s.songID, s.title, s.albumID, s.artistID, s.length, s.ratingCount, s.averageRating, s.ratingsSum " +
+                "FROM Songs s " +
+                "JOIN Albums a ON s.albumID = a.albumID " +
+                "WHERE a.name = ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, albumName);
+            try (ResultSet rs = ps.executeQuery()) {
+                return mapSongsFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            logError("An error occurred while fetching songs from the album", e);
+        }
+        return new ArrayList<>();
     }
 
+    /**
+     * Fetches all songs from an album using the album's ID. This is useful
+     * filtering songs by album ID directly from the Songs table.
+     *
+     * @param albumId The album's ID to filter songs by.
+     * @return A list of Song objects in the specified album.
+     */
     @Override
     public List<Song> findAllFromAlbumById(int albumId) {
-        return List.of();
+        String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum " +
+                "FROM Songs WHERE albumID = ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, albumId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return mapSongsFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            logError("An error occurred while fetching songs from the album ID", e);
+        }
+        return new ArrayList<>();
     }
+
 
     @Override
     public List<Song> getSongsInPlaylistByPlaylistName(String name) {
