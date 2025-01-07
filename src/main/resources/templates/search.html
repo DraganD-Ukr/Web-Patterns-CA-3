@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="text-center">Search Results</h2>
+
+    <!-- Display Search Query -->
+    <div th:if="${searchQuery}">
+        <h4>Showing results for: <span th:text="${searchQuery}"></span></h4>
+    </div>
+
+    <!-- Songs Results -->
+    <div th:if="${searchResponse.songs}">
+        <h4>Songs</h4>
+        <ul class="list-group">
+            <li class="list-group-item" th:each="song : ${searchResponse.songs}">
+                <span th:text="${song.title}">Song Title</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Artists Results -->
+    <div th:if="${searchResponse.artists}">
+        <h4>Artists</h4>
+        <ul class="list-group">
+            <li class="list-group-item" th:each="artist : ${searchResponse.artists}">
+                <span th:text="${artist.name}">Artist Name</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Albums Results -->
+    <div th:if="${searchResponse.albums}">
+        <h4>Albums</h4>
+        <ul class="list-group">
+            <li class="list-group-item" th:each="album : ${searchResponse.albums}">
+                <span th:text="${album.title}">Album Title</span>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Bootstrap JS and Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
 @Controller
@@ -21,26 +22,32 @@ public class SearchController {
     private final SongDAO songDao;
 
     @GetMapping("/search")
-    public String search(Model model) {
+    public String search(@RequestParam(value = "search", required = true) String query, Model model) {
 
-        String query = model.getAttribute("search").toString();
 
-        SearchResponse searchResponse = new SearchResponse(
-//                TODO: Use getAllSongsByTitleLike instead of getAllSongsByTitle
-                songDao.getAllSongsByTitle(query),
-                artistDao.getAllArtistsWhereNameLike(query),
-                albumDao.getAllAlbumsWhereArtistNameLike(query)
-        );
-        model.addAttribute("searchResponse", searchResponse);
+        if (query != null && !query.trim().isEmpty()) {
+            // Perform search in the database and get results
+            SearchResponse searchResponse = new SearchResponse(
+                    songDao.getAllSongsByTitle(query),
+                    artistDao.getAllArtistsWhereNameLike(query),
+                    albumDao.getAllAlbumsWhereNameLike(query)
+            );
 
-        log.info("Search results: {}", searchResponse);
+            model.addAttribute("searchResponse", searchResponse);
+            model.addAttribute("searchQuery", query); // Store the query in the model to display on the results page
+            log.info("Search results for query '{}': {}", query, searchResponse);
+        } else {
+            model.addAttribute("searchResponse", new SearchResponse(null, null, null)); // Empty response if no query is provided
+            model.addAttribute("searchQuery", "");
+        }
 
-        return "search";
-
+        return "search"; // Return to the search.html page
     }
 
-
-
-
-
 }
+
+
+
+
+
+
