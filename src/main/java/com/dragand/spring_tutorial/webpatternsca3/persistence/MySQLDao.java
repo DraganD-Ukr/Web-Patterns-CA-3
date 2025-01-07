@@ -2,8 +2,9 @@ package com.dragand.spring_tutorial.webpatternsca3.persistence;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -69,14 +70,19 @@ public class MySQLDao {
 
     private void loadProperties(String propertiesFilename) {
         properties = new Properties();
-        try {
-            String rootPath = Thread.currentThread()
-                    .getContextClassLoader()
-                    .getResource(propertiesFilename)
-                    .getPath();
-            properties.load(new FileInputStream(rootPath));
+        try (InputStream input = Thread.currentThread()
+                .getContextClassLoader()
+                .getResourceAsStream(propertiesFilename)) {
+
+            if (input == null) {
+                throw new FileNotFoundException("Property file '" + propertiesFilename + "' not found in the classpath");
+            }
+
+            properties.load(input);
+
         } catch (IOException e) {
             throw new RuntimeException("Failed to load properties from: " + propertiesFilename, e);
         }
     }
+
 }

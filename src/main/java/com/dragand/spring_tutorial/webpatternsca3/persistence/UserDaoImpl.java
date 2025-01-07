@@ -1,5 +1,7 @@
 package com.dragand.spring_tutorial.webpatternsca3.persistence;
 import com.dragand.spring_tutorial.webpatternsca3.business.User;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,14 +9,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
+
+
 /**
  * @Author: Jo Art Mahilaga
  */
 
+@Repository
+
+
 public class UserDaoImpl extends MySQLDao implements UserDAO {
 
-    public UserDaoImpl(String databaseName) {
-        super(databaseName);
+    public UserDaoImpl(String propertiesFilename) {
+        super(propertiesFilename);
+    }
+
+    public UserDaoImpl() {
+        super();
     }
 
     @Override
