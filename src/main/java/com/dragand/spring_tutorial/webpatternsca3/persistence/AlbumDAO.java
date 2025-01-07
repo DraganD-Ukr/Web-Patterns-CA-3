@@ -20,6 +20,13 @@ public interface AlbumDAO {
     List<Album> getAllAlbumsWhereArtistNameLike(String artistName);
 
     /**
+     * Retrieve all albums where album's name contains passed query.
+     * @param artistName - the name of the album to retrieve his albums.
+     * @return - a list of found albums.
+     */
+    List<Album> getAllAlbumsWhereNameLike(String artistName);
+
+    /**
      * Retrieve all albums by artist's name.
      * @param artistName - the name of the artist to retrieve his albums.
      * @return - a list of all artist's albums.

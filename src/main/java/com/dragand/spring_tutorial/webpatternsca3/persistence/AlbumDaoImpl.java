@@ -51,13 +51,7 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
             try(ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
 //                Using builder for easier object creation
-                    album = Album.builder()
-                            // Get the properties of an artist from the resultset
-                            .albumId(rs.getInt("artistId"))
-                            .title(rs.getString("title"))
-                            .artistId(rs.getInt("artistId"))
-                            .releaseDate(rs.getDate("releaseDate"))
-                            .build();
+                    album = fromResultSet(rs);
 //                Add the artist to the result list
                     result.add(album);
                 }
@@ -101,13 +95,7 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
 
                 while (rs.next()) {
 //                Using builder for easier object creation
-                    album = Album.builder()
-                            // Get the properties of an artist from the resultset
-                            .albumId(rs.getInt("artistId"))
-                            .title(rs.getString("title"))
-                            .artistId(rs.getInt("artistId"))
-                            .releaseDate(rs.getDate("releaseDate"))
-                            .build();
+                    album = fromResultSet(rs);
 //                Add the artist to the result list
                     result.add(album);
                 }
@@ -153,13 +141,7 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
 
                 while (rs.next()) {
 //                Using builder for easier object creation
-                    album = Album.builder()
-                            // Get the properties of an artist from the resultset
-                            .albumId(rs.getInt("artistId"))
-                            .title(rs.getString("title"))
-                            .artistId(rs.getInt("artistId"))
-                            .releaseDate(rs.getDate("releaseDate"))
-                            .build();
+                    album = fromResultSet(rs);
 //                Add the artist to the result list
                     result.add(album);
                 }
@@ -196,12 +178,7 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
             try (ResultSet rs = ps.executeQuery()) {
 
                 if (rs.next()) {
-                    album = Album.builder()
-                            .albumId(rs.getInt("artistId"))
-                            .title(rs.getString("title"))
-                            .artistId(rs.getInt("artistId"))
-                            .releaseDate(rs.getDate("releaseDate"))
-                            .build();
+                    album = fromResultSet(rs);
                 }
 
             } catch (SQLException e) {
@@ -211,6 +188,52 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
         } catch (SQLException e) {
             log.error("Error accessing the database: ", e);
         }
+        return album;
+    }
+
+    @Override
+    public List<Album> getAllAlbumsWhereNameLike(String artistName){
+
+        Album album;
+        List<Album> result = new ArrayList<>();
+
+        String query = "SELECT * FROM Albums WHERE title LIKE ?";
+
+        try (Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement(query)
+        ){
+
+            ps.setString(1, "%"+artistName+"%");
+
+            try(ResultSet rs = ps.executeQuery()){
+
+                while (rs.next()) {
+//                Using builder for easier object creation
+                    album = fromResultSet(rs);
+//                Add the artist to the result list
+                    result.add(album);
+                }
+
+            } catch (SQLException e) {
+                log.error("Error retrieving artists where name like: {}", artistName, e);
+            }
+
+
+        } catch (SQLException e) {
+            log.error("Error accessing the database: ", e);
+        }
+
+        return result;
+    }
+
+    private static Album fromResultSet(ResultSet rs) throws SQLException {
+        Album album;
+        album = Album.builder()
+                .albumId(rs.getInt("artistId"))
+                .title(rs.getString("title"))
+                .artistId(rs.getInt("artistId"))
+                .releaseDate(rs.getDate("releaseDate"))
+                .build();
         return album;
     }
 
