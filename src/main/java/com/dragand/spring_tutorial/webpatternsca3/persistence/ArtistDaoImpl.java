@@ -31,7 +31,11 @@ public class ArtistDaoImpl extends MySQLDao implements ArtistDAO {
         super(dbName);
     }
 
-
+    /**
+     * Retrieve an artist by id.
+     * @param id the id of the artist to retrieve.
+     * @return the artist with the given id, null if not found.
+     */
     @Override
     public Artist getArtistById(int id) {
 
@@ -66,6 +70,11 @@ public class ArtistDaoImpl extends MySQLDao implements ArtistDAO {
 
     }
 
+    /**
+     * Retrieve an only artist by name.
+     * @param name the name of the artist to retrieve.
+     * @return the artist with the given name, null if not found.
+     */
     @Override
     public Artist getArtistByName(String name) {
 
@@ -102,10 +111,13 @@ public class ArtistDaoImpl extends MySQLDao implements ArtistDAO {
 
     }
 
+
+    /**
+     * Retrieve all artists containing provided query.
+     * @return a list of all matching artists.
+     */
     @Override
     public List<Artist> getAllArtistsWhereNameLike(String artistName) {
-
-
 
 
         Artist artist;
@@ -146,6 +158,10 @@ public class ArtistDaoImpl extends MySQLDao implements ArtistDAO {
     }
 
 
+    /**
+     * Retrieve all artists.
+     * @return a list of all artists in the library.
+     */
     @Override
     public List<Artist> getAllArtists() {
 

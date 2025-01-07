@@ -22,7 +22,7 @@ public interface ArtistDAO {
     Artist getArtistByName(String name);
 
     /**
-     * Retrieve all artists containing provided String.
+     * Retrieve all artists containing provided query.
      * @return a list of all matching artists.
      */
     List<Artist> getAllArtistsWhereNameLike(String artistName);
