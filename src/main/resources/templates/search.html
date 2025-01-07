@@ -8,18 +8,22 @@
 </head>
 <body>
 
+
+<!-- Include the menu bar fragment -->
+<div th:replace="~{fragments/menu :: menu-bar}" class="sticky-top"></div>
+
 <div class="container mt-5">
     <h2 class="text-center">Search Results</h2>
 
     <!-- Display Search Query -->
-    <div th:if="${searchQuery}">
+    <div class="mb-5" th:if="${searchQuery}">
         <h4>Showing results for: <span th:text="${searchQuery}"></span></h4>
     </div>
 
     <!-- Songs Results -->
     <div th:if="${searchResponse.songs}">
         <h4>Songs</h4>
-        <ul class="list-group">
+        <ul class="list-group mb-1">
             <li class="list-group-item" th:each="song : ${searchResponse.songs}">
                 <span th:text="${song.title}">Song Title</span>
             </li>
@@ -29,7 +33,7 @@
     <!-- Artists Results -->
     <div th:if="${searchResponse.artists}">
         <h4>Artists</h4>
-        <ul class="list-group">
+        <ul class="list-group mb-1">
             <li class="list-group-item" th:each="artist : ${searchResponse.artists}">
                 <span th:text="${artist.name}">Artist Name</span>
             </li>
@@ -39,7 +43,7 @@
     <!-- Albums Results -->
     <div th:if="${searchResponse.albums}">
         <h4>Albums</h4>
-        <ul class="list-group">
+        <ul class="list-group mb-1">
             <li class="list-group-item" th:each="album : ${searchResponse.albums}">
                 <span th:text="${album.title}">Album Title</span>
             </li>
