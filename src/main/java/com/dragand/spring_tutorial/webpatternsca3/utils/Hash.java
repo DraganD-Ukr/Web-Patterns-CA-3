@@ -1,0 +1,31 @@
+package com.dragand.spring_tutorial.webpatternsca3.utils;
+
+
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.dragand.spring_tutorial.webpatternsca3.persistence.UserDAO;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+
+public class Hash {
+
+private final UserDAO userDAO;
+
+    //Method to check hash password
+    public boolean checkPasswordWithUsername(String password, String username){
+        //Get the hashed password from the database
+        String hashedPassword = userDAO.getPasswordByUserName(username);
+
+        //Check if the password is correct
+        BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), hashedPassword);
+        return result.verified;
+    }
+
+    //Method to hash password
+    public String hashPassword(String password){
+        return BCrypt.withDefaults().hashToString(12, password.toCharArray());
+    }
+
+}
