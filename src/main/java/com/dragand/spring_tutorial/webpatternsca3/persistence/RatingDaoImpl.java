@@ -15,8 +15,12 @@ import java.util.List;
 
 public class RatingDaoImpl extends MySQLDao implements RatingDAO {
 
-    public RatingDaoImpl(String databaseName) {
-        super(databaseName);
+    public RatingDaoImpl(String propertiesFilename) {
+        super(propertiesFilename);
+    }
+
+    public RatingDaoImpl() {
+        super();
     }
 
     @Override
