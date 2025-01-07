@@ -15,7 +15,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = NullPointerException.class)
     public String nullPointerHandler(Model model, NullPointerException ex) {
         log.error("NullPointerException occurred: ", ex);
-        model.addAttribute("err", "NullPointerException");
+        model.addAttribute("errType", "NullPointerException");
+        model.addAttribute("errMsg", ex.getMessage());
         return "error";
     }
 
