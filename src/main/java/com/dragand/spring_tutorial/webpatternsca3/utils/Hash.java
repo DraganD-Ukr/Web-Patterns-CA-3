@@ -14,9 +14,8 @@ public class Hash {
 private final UserDAO userDAO;
 
     //Method to check hash password
-    public boolean checkPasswordWithUsername(String password, String username){
+    public boolean checkPasswordWithUsername(String password, String hashedPassword){
         //Get the hashed password from the database
-        String hashedPassword = userDAO.getPasswordByUserName(username);
 
         //Check if the password is correct
         BCrypt.Result result = BCrypt.verifyer().verify(password.toCharArray(), hashedPassword);

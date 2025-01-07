@@ -5,6 +5,7 @@ import com.dragand.spring_tutorial.webpatternsca3.persistence.UserDAO;
 import com.dragand.spring_tutorial.webpatternsca3.utils.Hash;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @RequiredArgsConstructor
 @Controller
+@Slf4j
+
 public class UserController {
+
 
     private final UserDAO userDAO;
     private final Hash hashUtil;
@@ -21,11 +25,13 @@ public class UserController {
     @PostMapping("/login")
     public String login(@RequestParam String userName, @RequestParam String password, Model model, HttpSession session) {
         User user = userDAO.getUserByName(userName);
-        if (user != null && user.getPassword().equals(password)) {
+        if (user != null && hashUtil.checkPasswordWithUsername(password, user.getPassword())) {
             // Login successful, redirect to a home or dashboard page
         session.setAttribute("loggedInUser",user);
-        return "home"; // Redirect to home.html or similar
+        log.info("user with ID"+ user.getUserID() +" has logged");
+        return "index"; // Redirect to home.html or similar
         } else {
+            log.info("login attempt failed");
             // Login failed, display error message
             model.addAttribute("error", "Invalid username or password");
             return "login"; // Redirect back to login.html
