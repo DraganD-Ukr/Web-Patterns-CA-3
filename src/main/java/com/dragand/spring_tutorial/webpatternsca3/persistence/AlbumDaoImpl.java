@@ -28,7 +28,11 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
     }
 
 
-
+    /**
+     * Retrieve an album by artist's id.
+     * @param artistId - the id of the artist to retrieve his albums.
+     * @return - a list of all artist's albums.
+     */
     @Override
     public List<Album> getAllAlbumsByArtistId(int artistId) {
 
@@ -69,6 +73,11 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
         return result;
     }
 
+    /**
+     * Retrieve all albums where artist's name contains passed query.
+     * @param artistName - the name of the artist to retrieve his albums.
+     * @return - a list of all artist's albums.
+     */
     @Override
     public List<Album> getAllAlbumsWhereArtistNameLike(String artistName) {
 
@@ -115,6 +124,11 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
         return result;
     }
 
+    /**
+     * Retrieve all albums by artist's name.
+     * @param artistName - the name of the artist to retrieve his albums.
+     * @return - a list of all artist's albums.
+     */
     @Override
     public List<Album> getAllAlbumsByArtistName(String artistName) {
 
@@ -162,6 +176,11 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
         return result;
     }
 
+    /**
+     * Retrieve album by id.
+     * @param albumId - the id of the album to retrieve.
+     * @return - the album with the given id.
+     */
     @Override
     public Album getAlbumById(int albumId) {
 

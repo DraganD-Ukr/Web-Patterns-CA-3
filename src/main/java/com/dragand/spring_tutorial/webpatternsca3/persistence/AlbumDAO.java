@@ -13,7 +13,7 @@ public interface AlbumDAO {
     List<Album> getAllAlbumsByArtistId(int artistId);
 
     /**
-     * Retrieve all albums by artist's name.
+     * Retrieve all albums where artist's name contains passed query.
      * @param artistName - the name of the artist to retrieve his albums.
      * @return - a list of all artist's albums.
      */
