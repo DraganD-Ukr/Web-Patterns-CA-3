@@ -1,6 +1,9 @@
 package com.dragand.spring_tutorial.webpatternsca3.persistence;
 
 import com.dragand.spring_tutorial.webpatternsca3.business.Song;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -12,6 +15,10 @@ import java.util.List;
  *
  * @author Aloysius Wilfred Pacheco D00253302
  */
+
+@RequiredArgsConstructor
+@Repository
+@Log4j2
 public class SongDaoImpl extends MySQLDao implements SongDAO{
 
     public SongDaoImpl(String databaseName){
@@ -306,7 +313,7 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
      */
     private void logError(String message, Exception e) {
         System.out.println(LocalDateTime.now() + ": " + message);
-        e.printStackTrace();
+        log.error(message);
     }
 
 
