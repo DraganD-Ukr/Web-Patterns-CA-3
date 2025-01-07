@@ -9,36 +9,42 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
+                    <!-- Show these links if loggedInUser is not null -->
+                    <li th:unless="${#ctx.session.loggedInUser == null}">
                         <a class="nav-link" href="/songs">Songs</a>
                     </li>
-                    <li class="nav-item">
+                    <li th:unless="${#ctx.session.loggedInUser == null}">
                         <a class="nav-link" href="/artists">Artists</a>
                     </li>
-                    <li class="nav-item">
+                    <li th:unless="${#ctx.session.loggedInUser == null}">
                         <a class="nav-link" href="/albums">Albums</a>
                     </li>
-                    <li class="nav-item">
+                    <li th:unless="${#ctx.session.loggedInUser == null}">
                         <a class="nav-link" href="/search">Search</a>
                     </li>
-                    <li class="nav-item">
+                    <li th:unless="${#ctx.session.loggedInUser == null}">
                         <a class="nav-link" href="/profile">My Profile</a>
                     </li>
-                    <li class="nav-item">
+                    <li th:unless="${#ctx.session.loggedInUser == null}">
                         <a class="nav-link" href="/playlists">Playlists</a>
                     </li>
-                    <li class="nav-item">
+                    <li th:unless="${#ctx.session.loggedInUser == null}">
                         <a class="nav-link" href="/subscription">Subscription</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/login">Log In</a>
+
+                    <!-- Show the links if loggedInUser is null -->
+                    <li th:if="${#ctx.session.loggedInUser == null}">
+                        <a class="nav-link" href="/login">Login</a>
                     </li>
-                    <li class="nav-item">
+                    <li th:if="${#ctx.session.loggedInUser == null}">
                         <a class="nav-link" href="/register">Register</a>
+                    </li>
+                    <li th:if="${#ctx.session.loggedInUser != null}">
+                        <a class="nav-link" href="/logout">Logout</a>
                     </li>
                 </ul>
 
-                <!-- Search Bar in Navbar -->
+                <!-- Search Bar in Navbar (visible for all users) -->
                 <form action="/search" method="get" class="d-flex mx-auto" style="max-width: 600px;">
                     <input class="form-control" type="search" placeholder="Search for songs, artists, albums" aria-label="Search" name="search" required>
                     <button class="btn btn-outline-success" type="submit">Search</button>
