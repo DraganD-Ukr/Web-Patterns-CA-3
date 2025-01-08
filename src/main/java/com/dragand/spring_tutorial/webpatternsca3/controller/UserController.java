@@ -70,12 +70,16 @@ public class UserController {
             return "register"; // Redirect back to registration page with error
         }
     }
-        @GetMapping("/logout")
-        public String logout(HttpSession session, Model model) {
-            // Invalidate the session to log out the user
-            session.invalidate();
-            log.info("User has been logged out");
-            model.addAttribute("message", "You have been successfully logged out.");
-            return "login"; // Redirect to login.html with a logout success message
-        }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session, Model model) {
+        // Invalidate the session to log out the user
+        session.invalidate();
+        log.info("User has been logged out");
+        model.addAttribute("message", "You have been successfully logged out.");
+        return "login"; // Redirect to login.html with a logout success message
+    }
+
+
+
 }
