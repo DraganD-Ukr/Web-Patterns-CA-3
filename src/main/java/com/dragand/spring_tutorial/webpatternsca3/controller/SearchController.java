@@ -3,6 +3,8 @@ package com.dragand.spring_tutorial.webpatternsca3.controller;
 
 import com.dragand.spring_tutorial.webpatternsca3.business.dto.SearchResponse;
 import com.dragand.spring_tutorial.webpatternsca3.persistence.*;
+import com.dragand.spring_tutorial.webpatternsca3.utils.AuthUtils;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +22,12 @@ public class SearchController {
     private final AlbumDAO albumDao;
     private final ArtistDAO artistDao;
     private final SongDAO songDao;
+    private final AuthUtils authUtils;
 
     @GetMapping("/search")
-    public String search(@RequestParam(value = "search", required = true) String query, Model model) {
+    public String search(@RequestParam(value = "search", required = true) String query, Model model, HttpSession session) {
 
+        authUtils.authenticateUser(session, model);
 
         if (query != null && !query.trim().isEmpty()) {
             // Perform search in the database and get results
