@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 
@@ -27,13 +28,24 @@ public class SearchController {
     private final AuthUtils authUtils;
 
     @GetMapping("/search")
-    public String search(@RequestParam(value = "search", required = false) String query, Model model, HttpSession session)  {
+    public String search(
+            @RequestParam(value = "search", required = false) String query,
+            Model model,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
 
-        try {
-            authUtils.authenticateUser(session, model);
-        } catch (IOException e) {
-            log.error("Error authenticating user", e);
-        }
+            try {
+                authUtils.authenticateUser(session, model);
+            } catch (IOException e) {
+                log.error("Error authenticating user", e);
+            }
+            String subscriptionCheckResult = authUtils.isSubscriptionActive(session, redirectAttributes);
+            if (subscriptionCheckResult != null) {
+                return subscriptionCheckResult;
+            }
+
+
 
 
         if (query != null && !query.trim().isEmpty()) {

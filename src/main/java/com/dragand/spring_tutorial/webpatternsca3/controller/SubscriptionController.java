@@ -56,24 +56,26 @@ public class SubscriptionController {
 
         // Get the current subscription end date
         LocalDate currentEndDate = userDAO.getSubscriptionEndDate(loggedInUser.getUserID());
-        LocalDate newEndDate;
+        LocalDate newEndDate = null;
 
         if (currentEndDate == null || currentEndDate.isBefore(LocalDate.now())) {
             // If there's no valid subscription, start from today
             newEndDate = LocalDate.now().plusYears(1);
         } else {
-            // Extend the current subscription by 1 year
-            newEndDate = currentEndDate.plusYears(1);
+            return "index";
         }
 
-        // Update in the database
-        boolean success = userDAO.updateSubscriptionEndDate(loggedInUser.getUserID(), newEndDate);
-        if (success) {
-            session.setAttribute("loggedInUser", loggedInUser); // Update session data
-            model.addAttribute("message", "Subscription extended successfully until: " + newEndDate);
-        } else {
-            model.addAttribute("error", "Failed to extend subscription. Please try again.");
+
+
+            // Update in the database
+            boolean success = userDAO.updateSubscriptionEndDate(loggedInUser.getUserID(), newEndDate);
+            if (success) {
+                session.setAttribute("loggedInUser", loggedInUser); // Update session data
+                model.addAttribute("message", "Subscription extended successfully until: " + newEndDate);
+            } else {
+                model.addAttribute("error", "Failed to extend subscription. Please try again.");
+            }
+            return "subscription"; // Render subscription.html
         }
-        return "subscription"; // Render subscription.html
     }
-}
+

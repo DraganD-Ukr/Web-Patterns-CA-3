@@ -127,7 +127,11 @@ public class UserDaoImpl extends MySQLDao implements UserDAO {
                             rs.getString("lastName"),
                             rs.getString("userName"),
                             rs.getString("password"),
-                            rs.getInt("userID")
+                            rs.getInt("userID"),
+                            rs.getTimestamp("registrationDate").toLocalDateTime(), // Convert to LocalDateTime
+                            rs.getTimestamp("subscriptionEndDate") != null ?
+                            rs.getTimestamp("subscriptionEndDate").toLocalDateTime() : null // Handle null for subscriptionEndDate
+
                     );
                 }
             }

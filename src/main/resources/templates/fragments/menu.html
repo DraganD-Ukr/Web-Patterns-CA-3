@@ -11,15 +11,6 @@
                 <ul class="navbar-nav">
                     <!-- Show these links if loggedInUser is not null -->
                     <li th:unless="${#ctx.session.loggedInUser == null}">
-                        <a class="nav-link" href="/songs">Songs</a>
-                    </li>
-                    <li th:unless="${#ctx.session.loggedInUser == null}">
-                        <a class="nav-link" href="/artists">Artists</a>
-                    </li>
-                    <li th:unless="${#ctx.session.loggedInUser == null}">
-                        <a class="nav-link" href="/albums">Albums</a>
-                    </li>
-                    <li th:unless="${#ctx.session.loggedInUser == null}">
                         <a class="nav-link" href="/search">Search</a>
                     </li>
                     <li th:unless="${#ctx.session.loggedInUser == null}">
