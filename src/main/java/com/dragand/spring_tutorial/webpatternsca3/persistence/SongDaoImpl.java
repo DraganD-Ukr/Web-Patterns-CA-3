@@ -25,7 +25,26 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
         super(databaseName);
     }
 
-    //Search Querries
+    //Search Queries
+
+    /**
+     * Gets all songs from the database using a SELECT query on the Songs table.
+     *
+     * @return A list of all {@link Song} objects
+     */
+    @Override
+    public List<Song> getAllSongs() {
+        String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum FROM Songs";
+        try (Connection con = super.getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            return mapSongsFromResultSet(rs);
+        } catch (SQLException e) {
+            logError("An error occurred while fetching all songs", e);
+        }
+        return new ArrayList<>();
+    }
+
     /**
      * Finds a song by its ID. This method performs a search in the Songs table based on the given ID.
      *
@@ -267,6 +286,30 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
             }
         } catch (SQLException e) {
             logError("An error occurred while fetching a limited number of songs by name", e);
+        }
+        return new ArrayList<>();
+    }
+
+    /**
+     * Gets all songs from the database with a limit
+     * This method fetches a limited number of songs from the Songs table.
+     * using limit clause in SQL
+     *
+     * @param limit The number of songs to get
+     * @return A list of {@link Song} objects
+     */
+    @Override
+    public List<Song> getLimitedSongs(int limit) {
+        String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum " +
+                "FROM Songs LIMIT ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, limit);
+            try (ResultSet rs = ps.executeQuery()) {
+                return mapSongsFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            logError("An error occurred while fetching a limited number of songs", e);
         }
         return new ArrayList<>();
     }
