@@ -26,6 +26,29 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
     }
 
     //Search Querries
+    /**
+     * Finds a song by its ID. This method performs a search in the Songs table based on the given ID.
+     *
+     * @param id The ID of the song to search for.
+     * @return A Song object if a matching song is found, otherwise null.
+     */
+    @Override
+    public Song findSongById(int id) {
+        String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum " +
+                "FROM Songs WHERE songID = ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapSongFromResultSet(rs);
+                }
+            }
+        } catch (SQLException e) {
+            logError("An error occurred while fetching songs by ID", e);
+        }
+        return null;
+    }
 
     /**
      * Finds a song by its title. This method performs a search in the
