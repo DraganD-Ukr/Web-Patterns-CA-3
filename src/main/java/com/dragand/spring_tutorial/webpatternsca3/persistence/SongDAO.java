@@ -12,7 +12,14 @@ import java.util.List;
 public interface SongDAO {
 
     //Search Querry methods
+    //get all songs
 
+    /**
+     * Gets all songs from the database
+     *
+     * @return A list of all {@link Song} objects
+     */
+    List<Song> getAllSongs();
     /**
      * Gets A song by its title from the database
      *
@@ -104,4 +111,13 @@ public interface SongDAO {
      * @return A list of {@link Song} objects
      */
     List<Song> getLimitedSongsByName(String name, int limit);
+
+    //get all songs with limit
+    /**
+     * Gets all songs from the database with a limit
+     *
+     * @param limit The number of songs to get
+     * @return A list of {@link Song} objects
+     */
+    List<Song> getLimitedSongs(int limit);
 }
