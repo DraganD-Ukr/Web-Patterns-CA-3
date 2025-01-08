@@ -2,6 +2,8 @@ package com.dragand.spring_tutorial.webpatternsca3.persistence;
 
 import com.dragand.spring_tutorial.webpatternsca3.business.User;
 
+import java.time.LocalDate;
+
 /**
  * User DAO interface used to define the methods that will be implemented in the UserDAOImpl class
  *
@@ -56,4 +58,10 @@ public interface UserDAO {
      * @return The {@link User} object if found, otherwise {@code null}
      */
     User getUserById(int id);
+
+    LocalDate getSubscriptionEndDate(int userId);
+
+    boolean updateSubscriptionEndDate(int userId, LocalDate newEndDate);
+
 }
+

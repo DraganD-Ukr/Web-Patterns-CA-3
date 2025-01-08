@@ -1,12 +1,12 @@
 package com.dragand.spring_tutorial.webpatternsca3.persistence;
 import com.dragand.spring_tutorial.webpatternsca3.business.User;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -237,4 +237,47 @@ public class UserDaoImpl extends MySQLDao implements UserDAO {
 
         return user;
     }
+
+    @Override
+    public LocalDate getSubscriptionEndDate(int userId) {
+        String sql = "SELECT subscriptionEndDate FROM Users WHERE userID = ?";
+        LocalDate subscriptionEndDate = null;
+
+        try (Connection conn = super.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    java.sql.Date sqlDate = rs.getDate("subscriptionEndDate");
+                    if (sqlDate != null) {
+                        subscriptionEndDate = sqlDate.toLocalDate();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return subscriptionEndDate; // Returns null if no date is set
+    }
+
+
+    @Override
+    public boolean updateSubscriptionEndDate(int userId, LocalDate newEndDate) {
+        String sql = "UPDATE Users SET subscriptionEndDate = ? WHERE userID = ?";
+
+        try (Connection conn = super.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setDate(1, java.sql.Date.valueOf(newEndDate));
+            ps.setInt(2, userId);
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

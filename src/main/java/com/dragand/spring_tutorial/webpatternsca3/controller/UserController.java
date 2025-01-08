@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -27,9 +28,9 @@ public class UserController {
         User user = userDAO.getUserByName(userName);
         if (user != null && hashUtil.checkPasswordWithUsername(password, user.getPassword())) {
             // Login successful, redirect to a home or dashboard page
-        session.setAttribute("loggedInUser",user);
-        log.info("user with ID"+ user.getUserID() +" has logged");
-        return "index"; // Redirect to home.html or similar
+            session.setAttribute("loggedInUser", user);
+            log.info("user with ID" + user.getUserID() + " has logged");
+            return "index"; // Redirect to home.html or similar
         } else {
             log.info("login attempt failed");
             // Login failed, display error message
@@ -68,7 +69,17 @@ public class UserController {
             model.addAttribute("error", "Registration failed. Please try again.");
             return "register"; // Redirect back to registration page with error
         }
-
-
     }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session, Model model) {
+        // Invalidate the session to log out the user
+        session.invalidate();
+        log.info("User has been logged out");
+        model.addAttribute("message", "You have been successfully logged out.");
+        return "login"; // Redirect to login.html with a logout success message
+    }
+
+
+
 }
