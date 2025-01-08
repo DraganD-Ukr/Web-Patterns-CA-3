@@ -40,4 +40,13 @@ public interface AlbumDAO {
      */
     Album getAlbumById(int albumId);
 
+    //Refactoring to maintain purity of DAO pattern
+    /**
+     * Retrieve album id by name.
+     *
+     * @param albumName - the name of the album to retrieve.
+     * @return - the id of the album with the given name.
+     */
+    Album getAlbumByName(String albumName);
+
 }

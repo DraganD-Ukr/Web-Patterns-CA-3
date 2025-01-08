@@ -10,13 +10,9 @@ import java.util.List;
  * @author Aloysius Wilfred Pacheco D00253302
  */
 public interface SongDAO {
-    /**
-     * Gets A song by its title from the database
-     * @param title The title of the song to find
-     * @return The {@link Song} object if found, otherwise {@code null}
-     */
 
     //Search Querry methods
+     Song findSongById(int id);
 
      Song findSongByTitle(String title);
 
