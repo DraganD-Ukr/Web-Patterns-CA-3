@@ -3,6 +3,53 @@
 <head>
   <title>Register</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script>
+    // JavaScript function to toggle password visibility on mouse hold
+    function togglePasswordVisibility(action) {
+      const passwordField = document.getElementById("password");
+      if (action === "show") {
+        passwordField.type = "text";
+      } else if (action === "hide") {
+        passwordField.type = "password";
+      }
+    }
+
+    // JavaScript function to validate the registration form
+    function validateRegisterForm() {
+      const firstName = document.getElementById("firstName").value.trim();
+      const lastName = document.getElementById("lastName").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const cardNumber = document.getElementById("cardNumber").value.trim();
+
+      const nameRegex = /^(?=.*[A-Z])[A-Za-z\s]+$/; // At least one capital letter
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/; // 1 capital, 1 number, 1 special, 8+ chars
+
+      // Name Validation
+      if (!nameRegex.test(firstName)) {
+        alert("First Name must contain at least one capital letter.");
+        return false;
+      }
+
+      if (!nameRegex.test(lastName)) {
+        alert("Last Name must contain at least one capital letter.");
+        return false;
+      }
+
+      // Password Validation
+      if (!passwordRegex.test(password)) {
+        alert("Password must be at least 8 characters long and contain a capital letter, a number, and a special character.");
+        return false;
+      }
+
+      // Card Number Validation
+      if (cardNumber.length !== 16 || isNaN(cardNumber)) {
+        alert("Credit Card Number must be 16 digits.");
+        return false;
+      }
+
+      return true;
+    }
+  </script>
 </head>
 <body>
 <div th:replace="~{fragments/menu :: menu-bar}" class="sticky-top"></div>
@@ -14,7 +61,8 @@
           <h3>Register</h3>
         </div>
         <div class="card-body">
-          <form action="/register" method="post">
+          <form action="/register" method="post" onsubmit="return validateRegisterForm();">
+            <!-- User Information -->
             <div class="row mb-3">
               <div class="col-md-6">
                 <label for="firstName" class="form-label">First Name:</label>
@@ -29,10 +77,38 @@
               <label for="userName" class="form-label">Username:</label>
               <input type="text" id="userName" name="userName" class="form-control" required>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 position-relative">
               <label for="password" class="form-label">Password:</label>
-              <input type="password" id="password" name="password" class="form-control" required>
+              <div class="input-group">
+                <input type="password" id="password" name="password" class="form-control" required>
+                <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        onmousedown="togglePasswordVisibility('show')"
+                        onmouseup="togglePasswordVisibility('hide')"
+                        onmouseleave="togglePasswordVisibility('hide')">
+                  🌙
+                </button>
+              </div>
             </div>
+
+            <!-- Credit Card Information -->
+            <div class="mb-3">
+              <label for="cardNumber" class="form-label">Credit Card Number:</label>
+              <input type="text" id="cardNumber" name="cardNumber" class="form-control" placeholder="1234 5678 9012 3456" maxlength="16" required>
+            </div>
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="expiryDate" class="form-label">Expiration Date:</label>
+                <input type="month" id="expiryDate" name="expiryDate" class="form-control" required>
+              </div>
+              <div class="col-md-6">
+                <label for="cvv" class="form-label">CVV:</label>
+                <input type="text" id="cvv" name="cvv" class="form-control" placeholder="123" maxlength="3" required>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
             <div class="d-grid">
               <button type="submit" class="btn btn-success">Register</button>
             </div>
@@ -43,7 +119,6 @@
           <div th:if="${error}" class="alert alert-danger mt-3" role="alert">
             <span th:text="${error}"></span>
           </div>
-
           <!-- Display success message -->
           <div th:if="${message}" class="alert alert-success mt-3" role="alert">
             <span th:text="${message}"></span>
