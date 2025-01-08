@@ -29,8 +29,29 @@ public class PlaylistDaoImpl extends MySQLDao implements PlaylistDAO{
     public PlaylistDaoImpl(){
         super();
     }
-
     //Search query methods
+
+    /**
+     * Retrieve all playlists in the database that are public.
+     *
+     * @return a list of all playlists in the database
+     */
+    @Override
+    public List<Playlist> getAllPublicPlaylists() {
+        List<Playlist> playlists = new ArrayList<>();
+        String query = "SELECT * FROM playlists WHERE isPublic = 1";
+
+        try(Connection con = super.getConnection();
+            PreparedStatement ps = con.prepareStatement(query);
+            ResultSet rs = ps.executeQuery()) {
+            playlists = mapToPlaylists(rs);
+        } catch (SQLException e) {
+            logError("SQLException occurred while retrieving all public playlists", e);
+        }
+
+        return playlists;
+    }
+
     /**
      * Retrieve a playlist by the username of the user who created it
      * This method accomplishes this by first retrieving the id of the user from the username
