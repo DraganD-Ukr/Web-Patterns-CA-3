@@ -3,10 +3,7 @@ package com.dragand.spring_tutorial.webpatternsca3.persistence;
 import com.dragand.spring_tutorial.webpatternsca3.business.User;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -38,7 +35,7 @@ public class UserDaoImpl extends MySQLDao implements UserDAO {
             return false;
         }
 
-        String sql = "INSERT INTO Users (firstName, lastName, userName, password) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Users (firstName, lastName, userName, password, subscriptionEndDate) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = super.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -46,6 +43,7 @@ public class UserDaoImpl extends MySQLDao implements UserDAO {
             ps.setString(2, user.getLastName());
             ps.setString(3, user.getUserName());
             ps.setString(4, user.getPassword());
+            ps.setDate(5, Date.valueOf(user.getSubscriptionEndDate().toLocalDate()));
 
             return ps.executeUpdate() > 0;
 

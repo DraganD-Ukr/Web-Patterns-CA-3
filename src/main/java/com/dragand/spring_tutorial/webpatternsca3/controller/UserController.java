@@ -71,10 +71,13 @@ public class UserController {
         // Create a new User object
         User user = new User(firstName, lastName, userName, hashUtil.hashPassword(password), 0, LocalDateTime.now(), LocalDateTime.now().plusYears(1));
 
+        validatePayment(cardNumber, expiryDate, cvv);
+
         // Add the user to the database
         boolean isRegistered = userDAO.addUser(user);
 
         if (isRegistered) {
+
             model.addAttribute("message", "Registration successful! Your subscription ends on " + user.getSubscriptionEndDate());
             return "login"; // Redirect to the login page
         } else {
@@ -92,5 +95,23 @@ public class UserController {
         log.info("User has been logged out.");
         model.addAttribute("message", "You have been successfully logged out.");
         return "login"; // Redirect to login.html with a logout success message
+    }
+
+    private boolean validatePayment(String cardNumber, String expiryDate, String cvv) {
+        // Validate the credit card number with regex
+        String cardRegex = "^[0-9]{16}$";
+        if (!cardNumber.matches(cardRegex)) {
+            return false;
+        }
+
+        // Validate the expiry date with regex
+        String expiryRegex = "^(0[1-9]|1[0-2])\\/?([0-9]{2})$";
+        if (!expiryDate.matches(expiryRegex)) {
+            return false;
+        }
+
+        // Validate the CVV with regex
+        String cvvRegex = "^[0-9]{3}$";
+        return cvv.matches(cvvRegex);
     }
 }
