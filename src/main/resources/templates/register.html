@@ -21,17 +21,17 @@
       const password = document.getElementById("password").value.trim();
       const cardNumber = document.getElementById("cardNumber").value.trim();
 
-      const nameRegex = /^(?=.*[A-Z])[A-Za-z\s]+$/; // At least one capital letter
+      const nameRegex = /^(?=.*[A-Z])(?=.*\d.*\d)[A-Za-z\d\s]+$/; // At least one capital letter and two numbers
       const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/; // 1 capital, 1 number, 1 special, 8+ chars
 
       // Name Validation
       if (!nameRegex.test(firstName)) {
-        alert("First Name must contain at least one capital letter.");
+        alert("First Name must contain at least one capital letter and at least two numbers.");
         return false;
       }
 
       if (!nameRegex.test(lastName)) {
-        alert("Last Name must contain at least one capital letter.");
+        alert("Last Name must contain at least one capital letter and at least two numbers.");
         return false;
       }
 

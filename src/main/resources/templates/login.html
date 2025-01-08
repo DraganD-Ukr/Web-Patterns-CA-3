@@ -19,14 +19,16 @@
             const userName = document.getElementById("userName").value.trim();
             const password = document.getElementById("password").value.trim();
 
-            const nameRegex = /^(?=.*[A-Z])[A-Za-z\s]+$/; // At least one capital letter
+            const userNameRegex = /^(?=.*[A-Z])(?=.*\d.*\d)[A-Za-z\d\s]+$/; // At least one capital letter and two numbers
             const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/; // 1 capital, 1 number, 1 special, 8+ chars
 
-            if (!nameRegex.test(userName)) {
-                alert("Username must contain at least one capital letter.");
+            // Username Validation
+            if (!userNameRegex.test(userName)) {
+                alert("Username must contain at least one capital letter and at least two numbers.");
                 return false;
             }
 
+            // Password Validation
             if (!passwordRegex.test(password)) {
                 alert("Password must be at least 8 characters long and contain a capital letter, a number, and a special character.");
                 return false;
