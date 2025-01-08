@@ -61,4 +61,18 @@ public interface RatingDAO {
      * @return {@code true} if the rating was updated successfully, otherwise {@code false}
      */
     boolean updateRating(Rating rating);
+
+    /**
+     * Adds or updates a rating for a specified entity type.
+     *
+     * @param type The type of entity (e.g., "song", "playlist").
+     * @param entityID The ID of the entity being rated.
+     * @param userID The ID of the user providing the rating.
+     * @param ratingValue The rating value to be added or updated.
+     * @return True if the operation succeeds, false otherwise.
+     */
+
+    boolean addOrUpdateRating(String type, int entityID, int userID, int ratingValue);
+
+
 }

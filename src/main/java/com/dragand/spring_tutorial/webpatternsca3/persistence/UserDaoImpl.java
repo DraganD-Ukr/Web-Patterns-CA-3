@@ -1,4 +1,5 @@
 package com.dragand.spring_tutorial.webpatternsca3.persistence;
+
 import com.dragand.spring_tutorial.webpatternsca3.business.User;
 import org.springframework.stereotype.Repository;
 
@@ -9,15 +10,12 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-
-
 /**
- * @Author: Jo Art Mahilaga
+ * Implementation of UserDAO interface for managing user-related database operations.
+ *
+ * @Author Jo Art Mahilaga
  */
-
 @Repository
-
-
 public class UserDaoImpl extends MySQLDao implements UserDAO {
 
     public UserDaoImpl(String propertiesFilename) {
@@ -28,199 +26,185 @@ public class UserDaoImpl extends MySQLDao implements UserDAO {
         super();
     }
 
+    /**
+     * Adds a new user to the database.
+     *
+     * @param user The user to be added.
+     * @return True if the user is added successfully, false otherwise.
+     */
     @Override
     public boolean addUser(User user) {
-
-        // Validate input
         if (user == null) {
             return false;
         }
 
+        String sql = "INSERT INTO Users (firstName, lastName, userName, password) VALUES (?, ?, ?, ?)";
+        try (Connection conn = super.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-
-        try ( Connection conn = super.getConnection();
-              PreparedStatement ps = conn.prepareStatement("INSERT INTO Users (firstName, lastName, userName, password) VALUES (?, ?, ?, ?)")) {
-
-            // Set parameters for the prepared statement
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
             ps.setString(3, user.getUserName());
             ps.setString(4, user.getPassword());
 
-            int rowsAffected = ps.executeUpdate();
+            return ps.executeUpdate() > 0;
 
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            System.out.println(LocalDateTime.now() + ": An SQLException occurred while adding a user \n Error:" + e.getMessage());
-            e.printStackTrace();
-            return false;
-
-
-        } catch (NullPointerException e) {
-            System.out.println(LocalDateTime.now() + ": A NullPointerException occurred \n Error: " + e.getMessage());
+        } catch (SQLException | NullPointerException e) {
+            System.out.println(LocalDateTime.now() + ": Error adding user.\nError: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
 
+    /**
+     * Retrieves the password for a user by username.
+     *
+     * @param userName The username of the user.
+     * @return The password if the user exists, or null otherwise.
+     */
     @Override
     public String getPasswordByUserName(String userName) {
-
-        String password = null;
-        // Validate input
         if (userName == null) {
             return null;
         }
 
-
-
+        String sql = "SELECT password FROM Users WHERE userName = ?";
         try (Connection con = super.getConnection();
-             PreparedStatement ps = con.prepareStatement("SELECT * FROM Users WHERE userName = ?")) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            // Set parameters for the prepared statement
             ps.setString(1, userName);
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    password = rs.getString("password");
+                    return rs.getString("password");
                 }
-
             }
-        } catch (SQLException e) {
-            System.out.println(LocalDateTime.now() + ": An SQLException occurred in the getUserByID() method.\nError: " + e.getMessage());
-            e.printStackTrace();
 
-
-        } catch (NullPointerException e) {
-            System.out.println(LocalDateTime.now() + ": A NullPointerException occurred in the getUserByID() method.\nError: " + e.getMessage());
+        } catch (SQLException | NullPointerException e) {
+            System.out.println(LocalDateTime.now() + ": Error retrieving password.\nError: " + e.getMessage());
             e.printStackTrace();
         }
 
-        return password;
+        return null;
     }
 
-
+    /**
+     * Retrieves a user by their username.
+     *
+     * @param userName The username of the user.
+     * @return The User object if found, or null otherwise.
+     */
     @Override
     public User getUserByName(String userName) {
-
-        // Validate input
         if (userName == null) {
             return null;
         }
 
-        User user = null;
+        String sql = "SELECT * FROM Users WHERE userName = ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-
-        try (
-                Connection con = super.getConnection();
-                PreparedStatement ps = con.prepareStatement("SELECT * FROM Users WHERE userName = ?")) {
-
-            // Set parameters for the prepared statement
             ps.setString(1, userName);
 
             try (ResultSet rs = ps.executeQuery()) {
-                // Extract password if user found
                 if (rs.next()) {
-                    user = new User(
+                    return new User(
                             rs.getString("firstName"),
                             rs.getString("lastName"),
                             rs.getString("userName"),
                             rs.getString("password"),
                             rs.getInt("userID"),
-                            rs.getTimestamp("registrationDate").toLocalDateTime(), // Convert to LocalDateTime
-                            rs.getTimestamp("subscriptionEndDate") != null ?
-                            rs.getTimestamp("subscriptionEndDate").toLocalDateTime() : null // Handle null for subscriptionEndDate
-
+                            rs.getTimestamp("registrationDate").toLocalDateTime(),
+                            rs.getTimestamp("subscriptionEndDate") != null
+                                    ? rs.getTimestamp("subscriptionEndDate").toLocalDateTime()
+                                    : null
                     );
                 }
             }
-        } catch (SQLException e) {
-            System.out.println(LocalDateTime.now() + ": An SQLException occurred in the getUserByID() method.\nError: " + e.getMessage());
-            e.printStackTrace();
-
-
-        } catch (NullPointerException e) {
-            System.out.println(LocalDateTime.now() + ": A NullPointerException occurred in the getUserByID() method.\nError: " + e.getMessage());
+        } catch (SQLException | NullPointerException e) {
+            System.out.println(LocalDateTime.now() + ": Error retrieving user by name.\nError: " + e.getMessage());
             e.printStackTrace();
         }
 
-        return user;
+        return null;
     }
 
+    /**
+     * Deletes a user from the database.
+     *
+     * @param user The user to be deleted.
+     * @return True if the user is deleted successfully, false otherwise.
+     */
     @Override
     public boolean deleteUser(User user) {
-        // Validate input
         if (user == null) {
             return false;
         }
 
+        String sql = "DELETE FROM Users WHERE userName = ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-
-        try ( Connection con = super.getConnection();
-              PreparedStatement ps = con.prepareStatement("DELETE FROM Users WHERE userName= ?")) {
-
-            // Set parameters for the prepared statement
             ps.setString(1, user.getUserName());
 
-            int rowsAffected = ps.executeUpdate();
+            return ps.executeUpdate() > 0;
 
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            System.out.println(LocalDateTime.now() + ": An SQLException occurred while deleting a user.\nError: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-
-        } catch (NullPointerException e) {
-            System.out.println(LocalDateTime.now() + ": A NullPointerException occurred while deleting a user.\nError: " + e.getMessage());
+        } catch (SQLException | NullPointerException e) {
+            System.out.println(LocalDateTime.now() + ": Error deleting user.\nError: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
     }
+
+    /**
+     * Checks if a user exists by their username.
+     *
+     * @param userName The username to check.
+     * @return True if the user exists, false otherwise.
+     */
     @Override
     public boolean existsbyUserName(String userName) {
-        // Validate input
         if (userName == null) {
             return false;
         }
 
-        String query = "SELECT COUNT(*) FROM Users WHERE userName = ?";
+        String sql = "SELECT COUNT(*) FROM Users WHERE userName = ?";
         try (Connection con = super.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            // Set parameters for the prepared statement
             ps.setString(1, userName);
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     return rs.getInt(1) > 0;
                 }
             }
-        } catch (SQLException e) {
-            System.out.println(LocalDateTime.now() + ": An SQLException occurred while checking if user exists.\nError: " + e.getMessage());
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            System.out.println(LocalDateTime.now() + ": A NullPointerException occurred while checking if user exists.\nError: " + e.getMessage());
+
+        } catch (SQLException | NullPointerException e) {
+            System.out.println(LocalDateTime.now() + ": Error checking user existence.\nError: " + e.getMessage());
             e.printStackTrace();
         }
+
         return false;
     }
 
+    /**
+     * Retrieves a user by their ID.
+     *
+     * @param userId The ID of the user.
+     * @return The User object if found, or null otherwise.
+     */
     @Override
     public User getUserById(int userId) {
-
-        User user = null;
-        String query = "SELECT * FROM Users WHERE userID = ?";
-
+        String sql = "SELECT * FROM Users WHERE userID = ?";
         try (Connection con = super.getConnection();
-             PreparedStatement ps = con.prepareStatement(query)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, userId);
 
             try (ResultSet rs = ps.executeQuery()) {
-
                 if (rs.next()) {
-                    user = User.builder()
+                    return User.builder()
                             .firstName(rs.getString("firstName"))
                             .lastName(rs.getString("lastName"))
                             .userName(rs.getString("userName"))
@@ -228,34 +212,35 @@ public class UserDaoImpl extends MySQLDao implements UserDAO {
                             .userID(rs.getInt("userID"))
                             .build();
                 }
-
-            } catch (SQLException e) {
-                System.out.println(LocalDateTime.now() + ": SQLException occurred while getting the playlist.");
-                e.printStackTrace();
             }
 
-        } catch (SQLException e) {
-            System.out.println(LocalDateTime.now() + ": SQLException occurred while preparing the SQL query");
+        } catch (SQLException | NullPointerException e) {
+            System.out.println(LocalDateTime.now() + ": Error retrieving user by ID.\nError: " + e.getMessage());
             e.printStackTrace();
         }
 
-        return user;
+        return null;
     }
 
+    /**
+     * Retrieves the subscription end date for a user by their ID.
+     *
+     * @param userId The ID of the user.
+     * @return The subscription end date, or null if not set.
+     */
     @Override
     public LocalDate getSubscriptionEndDate(int userId) {
         String sql = "SELECT subscriptionEndDate FROM Users WHERE userID = ?";
-        LocalDate subscriptionEndDate = null;
-
         try (Connection conn = super.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, userId);
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     java.sql.Date sqlDate = rs.getDate("subscriptionEndDate");
                     if (sqlDate != null) {
-                        subscriptionEndDate = sqlDate.toLocalDate();
+                        return sqlDate.toLocalDate();
                     }
                 }
             }
@@ -263,14 +248,19 @@ public class UserDaoImpl extends MySQLDao implements UserDAO {
             e.printStackTrace();
         }
 
-        return subscriptionEndDate; // Returns null if no date is set
+        return null;
     }
 
-
+    /**
+     * Updates the subscription end date for a user.
+     *
+     * @param userId     The ID of the user.
+     * @param newEndDate The new subscription end date.
+     * @return True if the update was successful, false otherwise.
+     */
     @Override
     public boolean updateSubscriptionEndDate(int userId, LocalDate newEndDate) {
         String sql = "UPDATE Users SET subscriptionEndDate = ? WHERE userID = ?";
-
         try (Connection conn = super.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -278,10 +268,10 @@ public class UserDaoImpl extends MySQLDao implements UserDAO {
             ps.setInt(2, userId);
 
             return ps.executeUpdate() > 0;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
-
 }
