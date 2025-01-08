@@ -76,21 +76,25 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
     }
 
     /**
-     * Fetches all songs from a specific artist by name It joins the Songs table with
-     * the Artists table to get the songs associated with the artist name.
+     * Fetches all songs from a specific artist by name.
+     * This method makes use of the ArtistDao implementation to get the artist's ID.
+     * Then it performs a query on the Songs table to fetch all songs by the artist.
+     * This maintains the integrity of the DAO pattern.
      *
      * @param artist The name of the artist whose songs need to be fetched.
      * @return A list of Song objects belonging to the artist.
      */
     @Override
     public List<Song> findAllSongsFromArtist(String artist) {
-        String sql = "SELECT s.songID, s.title, s.albumID, s.artistID, s.length, s.ratingCount, s.averageRating, s.ratingsSum " +
-                "FROM Songs s " +
-                "JOIN Artists a ON s.artistID = a.artistID " +
-                "WHERE a.name = ?";
+        //uses method from artistDao implementation to maintain Dao integrity.
+        int artistId= new ArtistDaoImpl().getArtistByName(artist).getArtistId();
+
+        String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum " +
+                "FROM Songs WHERE artistID = ?";
+
         try (Connection con = super.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, artist);
+            ps.setInt(1, artistId);
             try (ResultSet rs = ps.executeQuery()) {
                 return mapSongsFromResultSet(rs);
             }
@@ -124,21 +128,23 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
     }
 
     /**
-     * Retrieves all songs from an album using the album's name It joins the Songs
-     * table with the Albums table to find the songs associated with the album name
+     * Retrieves all songs from an album using the album's name.
+     * This method uses the AlbumDao implementation to get the album's ID.
+     * Then it performs a query on the Songs table to fetch all songs from the album.
      *
-     * @param albumName The name of the album to search  .
+     * @param albumName The name of the album to search.
      * @return A list of Song objects from the album.
      */
     @Override
     public List<Song> findAllFromAlbumByName(String albumName) {
-        String sql = "SELECT s.songID, s.title, s.albumID, s.artistID, s.length, s.ratingCount, s.averageRating, s.ratingsSum " +
-                "FROM Songs s " +
-                "JOIN Albums a ON s.albumID = a.albumID " +
-                "WHERE a.title = ?";
+        //uses method from albumDao implementation to maintain Dao integrity.
+        int albumId= new AlbumDaoImpl().getAlbumByName(albumName).getAlbumId();
+
+        String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum " +
+                "FROM Songs WHERE albumID = ?";
         try (Connection con = super.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, albumName);
+            ps.setInt(1, albumId);
             try (ResultSet rs = ps.executeQuery()) {
                 return mapSongsFromResultSet(rs);
             }
@@ -305,16 +311,17 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
         return songList;
     }
 
+    //Logging methods maybe in the future could have other functionalities
     /**
-     * Logs error messages along with the exception details to the console
+     * Logs error messages with the given message and exception.
      *
      * @param message The message to log
      * @param e The exception to log
      */
     private void logError(String message, Exception e) {
-        System.out.println(LocalDateTime.now() + ": " + message);
-        log.error(message);
+        log.error(message+": ", e);
     }
+
 
 
 }

@@ -237,4 +237,43 @@ public class AlbumDaoImpl extends MySQLDao implements AlbumDAO{
         return album;
     }
 
+    /**
+     * Retrieve album id by name from the database using the album name.
+     * Uses prepared statement to prevent SQL injection.
+     *
+     * @param albumName - the name of the album to retrieve.
+     * @return - the id of the album with the given name.
+     */
+    @Override
+    public Album getAlbumByName(String albumName) {
+            Album album = null;
+            String query = "SELECT * FROM Albums WHERE title = ?";
+
+            try (Connection con = getConnection();
+                PreparedStatement ps = con.prepareStatement(query);
+            ) {
+
+                ps.setString(1, albumName);
+
+                try (ResultSet rs = ps.executeQuery()) {
+
+                    if (rs.next()) {
+                        album = Album.builder()
+                                .albumId(rs.getInt("artistId"))
+                                .title(rs.getString("title"))
+                                .artistId(rs.getInt("artistId"))
+                                .releaseDate(rs.getDate("releaseDate"))
+                                .build();
+                    }
+
+                } catch (SQLException e) {
+                    log.error("Error retrieving album by name: {}", albumName, e);
+                }
+
+            } catch (SQLException e) {
+                log.error("Error accessing the database: ", e);
+            }
+            return album;
+    }
+
 }
