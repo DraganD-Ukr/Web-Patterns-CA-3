@@ -1,0 +1,16 @@
+<!-- Display Songs in Card Format -->
+<div th:fragment="cards">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
+        <div class="col" th:each="song : ${songs}">
+            <div class="card h-100">
+                <img src="/song_cover_placeholder.jpg" class="card-img-top img-fluid" alt="Song Image" style="max-width: 150px; max-height: 150px; margin: auto;">
+                <div class="card-body text-center">
+                    <h6 class="card-title" th:text="${song.title}"></h6>
+                    <p class="card-text small" th:text="'Length: ' + ${song.length}"></p>
+                    <p class="card-text small" th:text="'Average Rating: ' + ${song.averageRating}"></p>
+                    <p class="card-text small" th:text="'Rating Count: ' + ${song.ratingCount}"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
