@@ -5,50 +5,136 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Results</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        // JavaScript to handle filter visibility and active button state
+        function showFilter(filter) {
+            document.querySelectorAll(".filter-section").forEach(section => {
+                section.style.display = "none"; // Hide all sections
+            });
+            document.getElementById(filter).style.display = "block"; // Show selected section
+
+            document.querySelectorAll(".filter-button").forEach(button => {
+                button.classList.remove("active"); // Remove active class from all buttons
+            });
+            document.querySelector(`[data-filter="${filter}"]`).classList.add("active"); // Add active class to the selected button
+        }
+    </script>
 </head>
 <body>
-
 
 <!-- Include the menu bar fragment -->
 <div th:replace="~{fragments/menu :: menu-bar}" class="sticky-top"></div>
 
 <div class="container mt-5">
-    <h2 class="text-center">Search Results</h2>
+
+    <div class="container text-center my-4">
+        <div class="d-flex justify-content-center">
+            <!-- Songs Filter -->
+            <button type="button"
+                    class="btn btn-outline-success px-4 py-2 rounded-pill mx-2 filter-button"
+                    data-filter="songs-section"
+                    onclick="showFilter('songs-section')">
+                Songs
+            </button>
+            <!-- Playlists Filter -->
+            <button type="button"
+                    class="btn btn-outline-success px-4 py-2 rounded-pill mx-2 filter-button"
+                    data-filter="playlists-section"
+                    onclick="showFilter('playlists-section')">
+                Playlists
+            </button>
+            <!-- Artists Filter -->
+            <button type="button"
+                    class="btn btn-outline-success px-4 py-2 rounded-pill mx-2 filter-button"
+                    data-filter="artists-section"
+                    onclick="showFilter('artists-section')">
+                Artists
+            </button>
+            <!-- Albums Filter -->
+            <button type="button"
+                    class="btn btn-outline-success px-4 py-2 rounded-pill mx-2 filter-button"
+                    data-filter="albums-section"
+                    onclick="showFilter('albums-section')">
+                Albums
+            </button>
+        </div>
+    </div>
 
     <!-- Display Search Query -->
-    <div class="mb-5" th:if="${searchQuery}">
+    <div class="mb-5 font-weight-bold" th:if="${searchQuery}">
         <h4>Showing results for: <span th:text="${searchQuery}"></span></h4>
     </div>
 
-    <!-- Songs Results -->
-    <div th:if="${searchResponse.songs}">
-        <h4>Songs</h4>
-        <ul class="list-group mb-1">
-            <li class="list-group-item" th:each="song : ${searchResponse.songs}">
-                <span th:text="${song.title}">Song Title</span>
-            </li>
-        </ul>
+    <!-- Songs Section -->
+    <div id="songs-section" class="filter-section" th:if="${searchResponse.songs != null}">
+        <h4 class="mb-4">Songs</h4>
+        <div th:if="${#lists.size(searchResponse.songs) > 0}">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 mb-5">
+                <div class="col" th:each="song : ${searchResponse.songs}">
+                    <div class="card h-100">
+                        <img src="/song_cover_placeholder.jpg" class="card-img-top img-fluid" alt="Song Image" style="max-width: 150px; max-height: 150px; margin: auto;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title" th:text="${song.title}"></h6>
+                            <p class="card-text small" th:text="'Length: ' + ${song.length}"></p>
+                            <p class="card-text small" th:text="'Average Rating: ' + ${song.averageRating}"></p>
+                            <p class="card-text small" th:text="'Rating Count: ' + ${song.ratingCount}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.size(searchResponse.songs) == 0}">
+            <p>No songs found for: <span th:text="${searchQuery}"></span></p>
+        </div>
     </div>
 
-    <!-- Artists Results -->
-    <div th:if="${searchResponse.artists}">
-        <h4>Artists</h4>
-        <ul class="list-group mb-1">
-            <li class="list-group-item" th:each="artist : ${searchResponse.artists}">
-                <span th:text="${artist.name}">Artist Name</span>
-            </li>
-        </ul>
+    <!-- Playlists Section -->
+    <div id="playlists-section" class="filter-section" style="display: none;">
+        <h4 class="mb-4">Playlists</h4>
+        <!-- Add your playlists content here -->
     </div>
 
-    <!-- Albums Results -->
-    <div th:if="${searchResponse.albums}">
-        <h4>Albums</h4>
-        <ul class="list-group mb-1">
-            <li class="list-group-item" th:each="album : ${searchResponse.albums}">
-                <span th:text="${album.title}">Album Title</span>
-            </li>
-        </ul>
+    <!-- Artists Section -->
+    <div id="artists-section" class="filter-section" style="display: none;" th:if="${searchResponse.artists != null}">
+        <h4 class="mb-4">Artists</h4>
+        <div th:if="${#lists.size(searchResponse.artists) > 0}">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 mb-5">
+                <div class="col" th:each="artist : ${searchResponse.artists}">
+                    <div class="card h-100 text-center">
+                        <img src="/artist_image_placeholder.png" class="card-img-top img-fluid" alt="Artist Image" style="max-width: 150px; max-height: 150px; margin: auto;">
+                        <div class="card-body">
+                            <h6 class="card-title" th:text="${artist.name}"></h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.size(searchResponse.artists) == 0}">
+            <p>No artists found for: <span th:text="${searchQuery}"></span></p>
+        </div>
     </div>
+
+    <!-- Albums Section -->
+    <div id="albums-section" class="filter-section" style="display: none;" th:if="${searchResponse.albums != null}">
+        <h4 class="mb-4">Albums</h4>
+        <div th:if="${#lists.size(searchResponse.albums) > 0}">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 mb-5">
+                <div class="col" th:each="album : ${searchResponse.albums}">
+                    <div class="card h-100">
+                        <img src="/album_cover_placeholder.png" class="card-img-top img-fluid" alt="Album Image" style="max-width: 150px; max-height: 150px; margin: auto;">
+                        <div class="card-body text-center">
+                            <h6 class="card-title" th:text="${album.title}"></h6>
+                            <p class="card-text small" th:text="'Release Date: ' + ${album.releaseDate}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${#lists.size(searchResponse.albums) == 0}">
+            <p>No albums found for: <span th:text="${searchQuery}"></span></p>
+        </div>
+    </div>
+
 </div>
 
 <!-- Bootstrap JS and Popper.js -->

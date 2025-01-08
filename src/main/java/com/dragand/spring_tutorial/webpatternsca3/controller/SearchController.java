@@ -13,6 +13,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
+
 @RequiredArgsConstructor
 @Controller
 public class SearchController {
@@ -25,9 +27,14 @@ public class SearchController {
     private final AuthUtils authUtils;
 
     @GetMapping("/search")
-    public String search(@RequestParam(value = "search", required = true) String query, Model model, HttpSession session) {
+    public String search(@RequestParam(value = "search", required = false) String query, Model model, HttpSession session)  {
 
-        authUtils.authenticateUser(session, model);
+        try {
+            authUtils.authenticateUser(session, model);
+        } catch (IOException e) {
+            log.error("Error authenticating user", e);
+        }
+
 
         if (query != null && !query.trim().isEmpty()) {
             // Perform search in the database and get results
@@ -42,7 +49,6 @@ public class SearchController {
             log.info("Search results for query '{}': {}", query, searchResponse);
         } else {
             model.addAttribute("searchResponse", new SearchResponse(null, null, null)); // Empty response if no query is provided
-            model.addAttribute("searchQuery", "");
         }
 
         return "search"; // Return to the search.html page
