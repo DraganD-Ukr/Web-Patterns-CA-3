@@ -2,6 +2,9 @@ package com.dragand.spring_tutorial.webpatternsca3.business;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 /**
  * User DTO used to hold user data from database
  *
@@ -33,6 +36,10 @@ public class User {
     @NonNull
     private String password; // hashed password
     private int userID;
+    private LocalDateTime registrationDate;
+    private LocalDateTime subscriptionEndDate;
+
+
 
 
 }
