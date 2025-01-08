@@ -200,33 +200,6 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
         return new ArrayList<>();
     }
 
-
-    /**
-     * Fetches all songs that belong to a playlist identified by its name.
-     * Uses a JOIN between the Songs, PlaylistSongs, and Playlists tables.
-     *
-     * @param name The playlist's name to fetch songs.
-     * @return A list of Song objects that are in the playlist.
-     */
-    @Override
-    public List<Song> getSongsInPlaylistByPlaylistName(String name) {
-        String sql = "SELECT s.songID, s.title, s.albumID, s.artistID, s.length, s.ratingCount, s.averageRating, s.ratingsSum " +
-                "FROM Songs s " +
-                "JOIN PlaylistSongs ps ON s.songID = ps.songID " +
-                "JOIN Playlists p ON ps.playlistID = p.playlistID " +
-                "WHERE p.name = ?";
-        try (Connection con = super.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, name);
-            try (ResultSet rs = ps.executeQuery()) {
-                return mapSongsFromResultSet(rs);
-            }
-        } catch (SQLException e) {
-            logError("An error occurred while fetching songs from the playlist", e);
-        }
-        return new ArrayList<>();
-    }
-
     /**
      * Adds a new song to the Songs table The provided Song object is mapped to the SQL
      * parameters, and the song is inserted into the database
