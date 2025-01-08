@@ -12,21 +12,63 @@ import java.util.List;
 public interface SongDAO {
 
     //Search Querry methods
-     Song findSongById(int id);
 
-     Song findSongByTitle(String title);
+    /**
+     * Gets A song by its title from the database
+     *
+     * @param id The title of the song to find
+     * @return A {@link Song} object if found, otherwise {@code null}
+     */
+    Song findSongById(int id);
 
-     List<Song> getAllSongsByTitle(String title);
+    /**
+     * Gets A song by its title from the database
+     *
+     * @param title The title of the song to find
+     * @return A {@link Song} object if found, otherwise {@code null}
+     */
+    Song findSongByTitle(String title);
 
-     List<Song> findAllSongsFromArtist(String artist);
+    /**
+     * Gets all songs from the database that resemble the title
+     *
+     * @param title The title of the song to find
+     * @return A list of all {@link Song} objects
+     */
+    List<Song> getAllSongsByTitle(String title);
 
-     List<Song> findAllSongsFromArtistById(int ArtistID);
+    /**
+     * Gets all songs from a specific artist using name
+     *
+     * @param artist The name of the artist to find songs from
+     * @return A list of {@link Song} objects from the artist
+     */
+    List<Song> findAllSongsFromArtist(String artist);
 
-     List<Song> findAllFromAlbumByName(String albumName);
+    /**
+     * Gets all songs from a specific artist using id
+     *
+     * @param ArtistID The id of the artist to find songs from
+     * @return A list of {@link Song} objects from the artist
+     */
+    List<Song> findAllSongsFromArtistById(int ArtistID);
 
-     List<Song> findAllFromAlbumById(int albumId);
+    /**
+     * Gets all songs from a specific album using name
+     *
+     * @param albumName The name of the album to find songs from
+     * @return A list of {@link Song} objects from the album
+     */
+    List<Song> findAllFromAlbumByName(String albumName);
 
-     List<Song> getSongsInPlaylistByPlaylistName(String name);
+    /**
+     * Gets all songs from a specific album using id
+     *
+     * @param albumId The id of the album to find songs from
+     * @return A list of {@link Song} objects from the album
+     */
+    List<Song> findAllFromAlbumById(int albumId);
+
 
     //Should be in the ratings table?
 
@@ -36,13 +78,30 @@ public interface SongDAO {
 //
 
     //Database Data Entry/Edit query
+    /**
+     * Adds a song to the database
+     *
+     * @param song The song to add to the database
+     * @return {@code true} if the song was added successfully, otherwise {@code false}
+     */
+    boolean addSong(Song song);
 
-     boolean addSong(Song song);
+    /**
+     * Removes a song from the database
+     *
+     * @param id The id of the song to remove
+     * @return {@code true} if the song was removed successfully, otherwise {@code false}
+     */
+    boolean deleteSong(int id);
 
-     boolean deleteSong(int id);
-
-     // Extended Functionality
+    // Extended Functionality
 
     //Top Rated songs for dropdowns with list limiter
-     List<Song> getLimitedSongsByName(String name, int limit);
+    /**
+     * Gets the top rated songs from the database
+     *
+     * @param limit The number of songs to get
+     * @return A list of {@link Song} objects
+     */
+    List<Song> getLimitedSongsByName(String name, int limit);
 }

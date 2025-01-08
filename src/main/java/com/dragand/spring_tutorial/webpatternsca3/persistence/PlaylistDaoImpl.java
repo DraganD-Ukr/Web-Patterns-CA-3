@@ -22,14 +22,12 @@ import java.util.List;
 @Slf4j
 public class PlaylistDaoImpl extends MySQLDao implements PlaylistDAO{
 
-    private final UserDaoImpl userDaoImpl;
 
     /**
      * Default constructor (uses default database set)
      */
-    public PlaylistDaoImpl(UserDaoImpl userDaoImpl){
+    public PlaylistDaoImpl(){
         super();
-        this.userDaoImpl = userDaoImpl;
     }
 
     //Search query methods
