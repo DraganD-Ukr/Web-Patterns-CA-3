@@ -1,9 +1,12 @@
 package com.dragand.spring_tutorial.webpatternsca3.persistence;
 
 import com.dragand.spring_tutorial.webpatternsca3.business.*;
+import com.dragand.spring_tutorial.webpatternsca3.persistence.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -19,46 +22,101 @@ import java.util.List;
 @Slf4j
 public class PlaylistDaoImpl extends MySQLDao implements PlaylistDAO{
 
+    private final UserDaoImpl userDaoImpl;
+
     /**
      * Default constructor (uses default database set)
      */
-    public PlaylistDaoImpl(){
+    public PlaylistDaoImpl(UserDaoImpl userDaoImpl){
         super();
+        this.userDaoImpl = userDaoImpl;
     }
 
+    //Search query methods
     /**
-     * Retrieve a playlist by the username of the user who created it.
+     * Retrieve a playlist by the username of the user who created it
+     * This method accomplishes this by first retrieving the id of the user from the username
+     * using the UserDaoImpl class and then using the id to retrieve the playlists.
      *
      * @param username the username of the user who created the playlist.
      * @return a list of all playlists created by the user
      */
     @Override
     public List<Playlist> getPlaylistByUsername(String username) {
-        return List.of();
+        List<Playlist> playlists = new ArrayList<>();
+
+        //Retrieve the user id from the username using the UserDaoImpl class
+        //to make sure DAO integrity is maintained
+        int userId = new UserDaoImpl().getUserByName(username).getUserID();
+
+        String query = "SELECT * FROM playlists WHERE userID = ?";
+
+        try(Connection con = super.getConnection();
+            PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, userId);
+            try(ResultSet rs = ps.executeQuery()) {
+                playlists = mapToPlaylists(rs);
+            }
+        } catch (SQLException e) {
+            logError("SQLException occurred while retrieving playlists by username", e);
+        }
+
+        return playlists;
     }
 
     /**
-     * Retrieve a playlist by its id.
+     * Retrieve a playlist by its id from the sql database using a prepared statement
      *
      * @param id the id of the playlist to retrieve
      * @return the playlist with the given id.
      */
     @Override
     public Playlist getPlaylistById(int id) {
-        return null;
+        Playlist playlist = null;
+        String query = "SELECT * FROM playlists WHERE playlistID = ?";
+
+        try(Connection con = super.getConnection();
+            PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, id);
+            try(ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    playlist = mapToPlaylist(rs);
+                }
+            }
+        } catch (SQLException e) {
+            logError("SQLException occurred while retrieving playlist by id", e);
+        }
+
+        return playlist;
     }
 
     /**
-     * Retrieve a playlist by its name
+     * Retrieve a playlist by its name from the sql database using a prepared statement
      *
      * @param name the name of the playlist to retrieve.
      * @return the playlist with the given name.
      */
     @Override
     public Playlist getPlaylistByName(String name) {
-        return null;
+        Playlist playlist = null;
+        String query = "SELECT * FROM playlists WHERE name = ?";
+
+        try(Connection con = super.getConnection();
+            PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, name);
+            try(ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    playlist = mapToPlaylist(rs);
+                }
+            }
+        } catch (SQLException e) {
+            logError("SQLException occurred while retrieving playlist by name", e);
+        }
+
+        return playlist;
     }
 
+    //Database Data Entry/Edit query
     /**
      * Creates a playlist in the database
      *
@@ -117,7 +175,11 @@ public class PlaylistDaoImpl extends MySQLDao implements PlaylistDAO{
         return false;
     }
 
+    //Extended Functionality
+    //To be implemented in the future
 
+
+    //Helper methods
     /**
      * Maps a result set to a playlist object to maintain readability
      * and reduce code duplication.
