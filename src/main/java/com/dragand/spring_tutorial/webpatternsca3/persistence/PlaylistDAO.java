@@ -47,24 +47,6 @@ public interface PlaylistDAO {
     boolean deletePlaylist(int id);
 
     /**
-     * Adds a song to a playlist
-     *
-     * @param playlistId the id of the playlist to add the song to
-     * @param songId the id of the song to be added to the playlist
-     * @return {@code true} if the song was added successfully, if not {@code false}
-     */
-    boolean addSongToPlaylist(int playlistId, int songId);
-
-    /**
-     * Removes a song from a playlist
-     *
-     * @param playlistId the id of the playlist to remove the song from
-     * @param songId the id of the song to be removed from the playlist
-     * @return {@code true} if the song was removed successfully, if not {@code false}
-     */
-    boolean removeSongFromPlaylist(int playlistId, int songId);
-
-    /**
      * Renames a playlist
      *
      * @param playlistId the id of the playlist to be renamed

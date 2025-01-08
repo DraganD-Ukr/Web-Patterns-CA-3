@@ -118,53 +118,70 @@ public class PlaylistDaoImpl extends MySQLDao implements PlaylistDAO{
 
     //Database Data Entry/Edit query
     /**
-     * Creates a playlist in the database
+     * Creates a playlist in the database using a prepared statement
+     * The method returns the id of the playlist created using the RETURN_GENERATED_KEYS option
+     * if no playlist is created, a SQLException is thrown and -1 is returned
      *
      * @param playlist the playlist to be created
-     * @return the id of the playlist created
+     * @return the id of the playlist created, if no playlist is created -1 is returned
      */
     @Override
     public int createPlaylist(Playlist playlist) {
-        return 0;
+        int playlistId = -1;
+        String query = "INSERT INTO playlists (userID, name, isPublic) VALUES (?, ?, ?)";
+
+        try(Connection con = super.getConnection();
+            PreparedStatement ps = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setInt(1, playlist.getUserId());
+            ps.setString(2, playlist.getName());
+            ps.setBoolean(3, playlist.isPublic());
+
+            int affectedRows = ps.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Creating playlist failed, no rows affected.");
+            }
+
+            try(ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    playlistId = rs.getInt(1);
+                } else {
+                    throw new SQLException("Creating playlist failed, no ID obtained.");
+                }
+            }
+        } catch (SQLException e) {
+            logError("SQLException occurred while creating playlist", e);
+        }
+
+        return playlistId;
     }
 
     /**
-     * Deletes a playlist from the database by its id
+     * Deletes a playlist from the database by its id using a prepared statement
+     * The method returns {@code true} if the playlist was deleted successfully, if not {@code false}
      *
      * @param id the id of the playlist to be deleted
      * @return {@code true} if the playlist was deleted successfully, if not {@code false}
      */
     @Override
     public boolean deletePlaylist(int id) {
+        String query = "DELETE FROM playlists WHERE playlistID = ?";
+
+        try(Connection con = super.getConnection();
+            PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setInt(1, id);
+            int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            logError("SQLException occurred while deleting playlist", e);
+        }
+
         return false;
     }
 
-    /**
-     * Adds a song to a playlist
-     *
-     * @param playlistId the id of the playlist to add the song to
-     * @param songId     the id of the song to be added to the playlist
-     * @return {@code true} if the song was added successfully, if not {@code false}
-     */
-    @Override
-    public boolean addSongToPlaylist(int playlistId, int songId) {
-        return false;
-    }
 
     /**
-     * Removes a song from a playlist
-     *
-     * @param playlistId the id of the playlist to remove the song from
-     * @param songId     the id of the song to be removed from the playlist
-     * @return {@code true} if the song was removed successfully, if not {@code false}
-     */
-    @Override
-    public boolean removeSongFromPlaylist(int playlistId, int songId) {
-        return false;
-    }
-
-    /**
-     * Renames a playlist
+     * Renames a playlist using a prepared statement AND update sql query
+     * The method returns {@code true} if the playlist was renamed successfully, if not {@code false}
      *
      * @param playlistId the id of the playlist to be renamed
      * @param newName    the new name of the playlist
@@ -172,6 +189,18 @@ public class PlaylistDaoImpl extends MySQLDao implements PlaylistDAO{
      */
     @Override
     public boolean renamePlaylist(int playlistId, String newName) {
+        String query = "UPDATE playlists SET name = ? WHERE playlistID = ?";
+
+        try(Connection con = super.getConnection();
+            PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, newName);
+            ps.setInt(2, playlistId);
+            int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            logError("SQLException occurred while renaming playlist", e);
+        }
+
         return false;
     }
 
