@@ -28,7 +28,9 @@ CREATE TABLE Users (
                        lastName VARCHAR(100) NOT NULL,
                        username VARCHAR(100) NOT NULL UNIQUE,
                        password VARCHAR(255) NOT NULL,
-                       registrationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                       registrationDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                       subscriptionEndDate DATETIME
+
 );
 
 -- Create Songs table
