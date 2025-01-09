@@ -1,9 +1,8 @@
 <!-- Navbar -->
 <div th:fragment="menu-bar">
-
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Music Library</a>
+            <a class="navbar-brand" href="/" th:text="#{navbar.home}">Music Library</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -11,40 +10,48 @@
                 <ul class="navbar-nav">
                     <!-- Show these links if loggedInUser is not null -->
                     <li th:unless="${#ctx.session.loggedInUser == null}">
-                        <a class="nav-link" href="/search">Search</a>
+                        <a class="nav-link" href="/search" th:text="#{navbar.search}"></a>
                     </li>
                     <li th:unless="${#ctx.session.loggedInUser == null}">
-                        <a class="nav-link" href="/songs">songs</a>
+                        <a class="nav-link" href="/songs" th:text="#{navbar.songs}"></a>
                     </li>
                     <li th:unless="${#ctx.session.loggedInUser == null}">
-                        <a class="nav-link" href="/profile">My Profile</a>
+                        <a class="nav-link" href="/profile" th:text="#{navbar.profile}"></a>
                     </li>
                     <li th:unless="${#ctx.session.loggedInUser == null}">
-                        <a class="nav-link" href="/playlists">Playlists</a>
+                        <a class="nav-link" href="/playlists" th:text="#{navbar.playlists}"></a>
                     </li>
                     <li th:unless="${#ctx.session.loggedInUser == null}">
-                        <a class="nav-link" href="/subscription">Subscription</a>
+                        <a class="nav-link" href="/subscription" th:text="#{navbar.subscription}"></a>
                     </li>
 
                     <!-- Show the links if loggedInUser is null -->
                     <li th:if="${#ctx.session.loggedInUser == null}">
-                        <a class="nav-link" href="/login">Login</a>
+                        <a class="nav-link" href="/login" th:text="#{navbar.login}"></a>
                     </li>
                     <li th:if="${#ctx.session.loggedInUser == null}">
-                        <a class="nav-link" href="/register">Register</a>
+                        <a class="nav-link" href="/register" th:text="#{navbar.register}"></a>
                     </li>
                     <li th:if="${#ctx.session.loggedInUser != null}">
-                        <a class="nav-link" href="/logout">Logout</a>
+                        <a class="nav-link" href="/logout" th:text="#{navbar.logout}"></a>
                     </li>
                 </ul>
 
-                <!-- Search Bar in Navbar (visible for all users) -->
+                <!-- Search Bar in Navbar (visible for logged in only users) -->
                 <form th:if="${#ctx.session.loggedInUser != null}" action="/search" method="get" class="d-flex mx-auto" style="max-width: 600px;">
-                    <input class="form-control" type="search" placeholder="Search for songs, artists, albums" aria-label="Search" name="search" required>
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                    <input class="form-control" type="search"
+                           th:placeholder="#{search.placeholder}"
+                           aria-label="Search" name="search" required>
+                    <button class="btn btn-outline-success" type="submit" th:text="#{search.buttonLabel}">Search</button>
                 </form>
+
+                <!-- Language Change Buttons -->
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/changeLanguage?lang=en">En</a>
+                    <a class="nav-link" href="/changeLanguage?lang=de">De</a>
+                </div>
+
             </div>
         </div>
     </nav>
-
 </div>
