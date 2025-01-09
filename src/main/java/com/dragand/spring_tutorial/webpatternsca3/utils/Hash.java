@@ -27,4 +27,10 @@ private final UserDAO userDAO;
         return BCrypt.withDefaults().hashToString(12, password.toCharArray());
     }
 
+    public boolean matchesOldPassword(String oldPlainPassword, String oldHashedPassword) {
+        // Use BCrypt to verify the password
+        BCrypt.Result result = BCrypt.verifyer().verify(oldPlainPassword.toCharArray(), oldHashedPassword);
+        return result.verified;
+    }
+
 }

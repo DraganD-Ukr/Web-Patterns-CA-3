@@ -20,6 +20,14 @@ public interface UserDAO {
     boolean addUser( User user);
 
     /**
+     * Updates a user in the database
+     *
+     * @param user The user to update
+     * @return {@code true} if the user was updated successfully, otherwise {@code false}
+     */
+    boolean updateUser(User user);
+
+    /**
      * Retrieves the hashed password for a given username
      *
      * @param userName The username to find the password for

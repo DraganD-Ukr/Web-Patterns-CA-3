@@ -1,16 +1,19 @@
 package com.dragand.spring_tutorial.webpatternsca3.controller;
 
 import com.dragand.spring_tutorial.webpatternsca3.business.User;
+import com.dragand.spring_tutorial.webpatternsca3.business.dto.UserUpdateRequest;
 import com.dragand.spring_tutorial.webpatternsca3.persistence.UserDAO;
+import com.dragand.spring_tutorial.webpatternsca3.utils.AuthUtils;
 import com.dragand.spring_tutorial.webpatternsca3.utils.Hash;
+import com.dragand.spring_tutorial.webpatternsca3.utils.RegexUtils;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
@@ -24,6 +27,8 @@ public class UserController {
 
     private final UserDAO userDAO;
     private final Hash hashUtil;
+    private final AuthUtils authUtils;
+    private final RegexUtils regexUtils;
 
     @PostMapping("/login")
     public String login(
@@ -96,6 +101,89 @@ public class UserController {
         model.addAttribute("message", "You have been successfully logged out.");
         return "login"; // Redirect to login.html with a logout success message
     }
+
+
+    @PatchMapping("/profile")
+    public String updateUser(
+            @ModelAttribute("userUpdate") UserUpdateRequest userUpdateRequest,
+            HttpSession session,
+            Model model
+    ) {
+
+        try {
+            authUtils.authenticateUser(session, model);
+        } catch (IOException e) {
+            log.error("Error authenticating user", e);
+        }
+
+        User user = (User) session.getAttribute("loggedInUser");
+
+        // Update only the fields that have changed
+        if (isChanged(userUpdateRequest, user)) {
+            log.info("User with ID: {} updated their profile.", user.getUserID());
+        } else {
+            log.warn("User with ID: {} tried to update their profile with no changes detected.", user.getUserID());
+            model.addAttribute("error", "No changes detected.");
+            return "profile"; // Stay on the profile page
+        }
+
+
+        // Save the updated user in the database
+        boolean isUpdated = userDAO.updateUser(user);
+
+        if (isUpdated) {
+            model.addAttribute("message", "Profile updated successfully.");
+            session.setAttribute("loggedInUser", user); // Update session data
+            return "index"; // Redirect to the home page
+        } else {
+            model.addAttribute("error", "Profile update failed. Please try again.");
+            return "profile"; // Stay on the profile page
+        }
+    }
+
+    private boolean isChanged(UserUpdateRequest userUpdateRequest, User user) {
+
+        boolean isChanged = false;
+
+        if (regexUtils.isValidName(userUpdateRequest.firstName()) &&
+                !userUpdateRequest.firstName().equals(user.getFirstName())
+        ) {
+            user.setFirstName(userUpdateRequest.firstName());
+            isChanged = true;
+        }
+        if (regexUtils.isValidName(userUpdateRequest.lastName()) &&
+                !userUpdateRequest.lastName().equals(user.getLastName())) {
+            user.setLastName(userUpdateRequest.lastName());
+            isChanged = true;
+        }
+
+        if (regexUtils.isValidUserName(userUpdateRequest.username()) &&
+                !userUpdateRequest.username().equals(user.getUserName())) {
+            user.setUserName(userUpdateRequest.username());
+            isChanged = true;
+        }
+
+
+//            Check if the old password matches the one in the database
+            if (hashUtil.matchesOldPassword(userUpdateRequest.oldPassword(), user.getPassword())) {
+//                Update the password
+                if (regexUtils.isValidPassword(userUpdateRequest.newPassword())) {
+                    user.setPassword(hashUtil.hashPassword(userUpdateRequest.newPassword()));
+                    isChanged = true;
+                } else {
+                    log.info("User with id: {} entered an invalid new password.{}", user.getUserID());
+                }
+            } else {
+                log.info("User with id: {} entered incorrect old password.{}", user.getUserID());
+            }
+
+
+        return isChanged;
+
+    }
+
+
+
 
     private boolean validatePayment(String cardNumber, String expiryDate, String cvv) {
         // Validate the credit card number with regex

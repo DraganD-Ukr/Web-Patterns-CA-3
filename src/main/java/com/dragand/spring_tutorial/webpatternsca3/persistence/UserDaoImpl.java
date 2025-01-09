@@ -1,6 +1,8 @@
 package com.dragand.spring_tutorial.webpatternsca3.persistence;
 
 import com.dragand.spring_tutorial.webpatternsca3.business.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -14,6 +16,8 @@ import java.time.LocalDateTime;
  */
 @Repository
 public class UserDaoImpl extends MySQLDao implements UserDAO {
+
+    private static final Logger log = LoggerFactory.getLogger(UserDaoImpl.class);
 
     public UserDaoImpl(String propertiesFilename) {
         super(propertiesFilename);
@@ -50,6 +54,30 @@ public class UserDaoImpl extends MySQLDao implements UserDAO {
         } catch (SQLException | NullPointerException e) {
             System.out.println(LocalDateTime.now() + ": Error adding user.\nError: " + e.getMessage());
             e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateUser(User user) {
+        if (user == null) {
+            return false;
+        }
+
+        String sql = "UPDATE Users SET firstName = ?, lastName = ?, password = ?, userName = ? WHERE userID = ?";
+        try (Connection con = super.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setString(3, user.getPassword());
+            ps.setString(4, user.getUserName());
+            ps.setInt(5, user.getUserID());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException | NullPointerException e) {
+            log.error("Error updating user: {}", e.getMessage());
             return false;
         }
     }
