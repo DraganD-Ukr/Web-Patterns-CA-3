@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -101,6 +102,19 @@ public class PlaylistController {
 
         return "playlists"; // Return the Thymeleaf template
     }
-
+    @PostMapping("/rename-playlist")
+    public String renamePlaylist(
+            @RequestParam(value = "playlistId", required = false) Integer playlistId,
+            @RequestParam(value = "newName", required = false) String newName,
+            HttpSession session,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (playlistId != null && newName != null && !newName.trim().isEmpty()) {
+            playlistDao.renamePlaylist(playlistId, newName);
+        } else {
+            redirectAttributes.addFlashAttribute("error", "Playlist name cannot be empty");
+        }
+        return "redirect:/playlists";
+    }
 
 }

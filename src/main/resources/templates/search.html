@@ -87,7 +87,7 @@
                                 <div>
                                     <strong th:text="${playlist.name}"></strong>
                                 </div>
-                                <form action="/playlistsSearchView" method="get" style="display:inline;">
+                                <form action="/playlists" method="get" style="display:inline;">
                                     <input type="hidden" name="playlistId" th:value="${playlist.playlistId}" />
                                     <input type="hidden" name="publicQuery" th:value="${searchQuery}">
                                     <button type="submit"

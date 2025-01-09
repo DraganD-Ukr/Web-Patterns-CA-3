@@ -25,24 +25,45 @@
         <div th:each="playlist : ${userPlaylists}">
             <div class="list-group-item">
                 <div class="d-flex justify-content-between align-items-center">
+                    <!-- Playlist Name Display -->
                     <div>
+                        <!-- Playlist Name Span with dynamic ID -->
+                        <span th:id="|playlist-name-${playlist.playlistId}|">
                         <strong th:text="${playlist.name}"></strong>
-                    </div>
-                    <form action="/playlists" method="get" style="display:inline;">
-                        <input type="hidden" name="playlistId" th:value="${playlist.playlistId}" />
-                        <input type="hidden" name="userQuery" th:value="${userQuery}">
-                        <button type="submit"
-                                th:classappend="${selectedPlaylistId == playlist.playlistId} ? 'btn btn-danger' : 'btn btn-primary'"
-                                th:text="${selectedPlaylistId == playlist.playlistId} ? 'Close' : 'View Songs'">
-                        </button>
-                    </form>
-                </div>
+                    </span>
 
+                        <!-- Rename Form -->
+                        <form th:id="|rename-form-${playlist.playlistId}|" action="/rename-playlist" method="post" style="display: none;">
+                            <input type="hidden" name="playlistId" th:value="${playlist.playlistId}">
+                            <input type="text" name="newName" class="form-control w-75" th:value="${playlist.name}" required>
+                            <button type="submit" class="btn btn-success btn-sm ms-2">Confirm</button>
+                        </form>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div>
+                        <!-- Rename Button (Shows form when clicked) -->
+                        <button class="btn btn-warning btn-sm"
+                                th:onclick="|toggleRenameForm(${playlist.playlistId})|" >
+                            Rename
+                        </button>
+
+                        <!-- View Songs Button -->
+                        <form action="/playlists" method="get" style="display:inline;">
+                            <input type="hidden" name="playlistId" th:value="${playlist.playlistId}" />
+                            <input type="hidden" name="userQuery" th:value="${userQuery}">
+                            <button type="submit"
+                                    th:classappend="${selectedPlaylistId == playlist.playlistId} ? 'btn btn-danger' : 'btn btn-primary'"
+                                    th:text="${selectedPlaylistId == playlist.playlistId} ? 'Close' : 'View Songs'">
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
                 <!-- Display songs within the playlist if playlistSongs is available -->
-                <div th:if="${songs != null and selectedPlaylistId == playlist.playlistId}">
+                <div th:if="${songs != null and selectedPlaylistId == playlist.playlistId}" style="padding-bottom: 1em;">
                     <div th:replace="~{fragments/songCards :: cards}"></div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -69,14 +90,35 @@
                         </button>
                     </form>
                 </div>
-                <div th:if="${songs != null and selectedPlaylistId == playlist.playlistId}">
+                <div th:if="${songs != null and selectedPlaylistId == playlist.playlistId}" style="padding-bottom: 1em;">
                     <div th:replace="~{fragments/songCards :: cards}"></div>
                 </div>
-
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // JavaScript to toggle the visibility of the rename form
+    function toggleRenameForm(playlistId) {
+        // Get the form element and playlist name span element by their IDs
+        const form = document.getElementById('rename-form-' + playlistId);
+        const nameSpan = document.getElementById('playlist-name-' + playlistId);
+
+        // Toggle form visibility
+        if (form.style.display === 'none') {
+            form.style.display = 'flex';  // Show the form
+            form.className = 'd-flex';
+            nameSpan.style.display = 'none';  // Hide the playlist name
+        } else {
+            form.className = '';
+            form.style.display = 'none';  // Hide the form
+            nameSpan.style.display = 'block';  // Show the playlist name
+        }
+    }
+</script>
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
