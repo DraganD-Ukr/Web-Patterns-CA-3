@@ -52,7 +52,12 @@ public class SongController {
     }
 
 
-
+    /**
+     * Get the playlists for the logged in user. Used to display the playlists on the songs page to be eble to add songs to them
+     * @param session the session to get the user from
+     * @param model the model to add the playlists to
+     * @return the songs page
+     */
     public String getUsersPlaylists(HttpSession session, Model model) {
 
         User user = (User) session.getAttribute("loggedInUser");

@@ -10,6 +10,9 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
 import java.util.Locale;
 
+/**
+ * Web configuration class. Enables hidden HTTP method filter and sets up locale resolver and interceptor for i18n.
+ */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 

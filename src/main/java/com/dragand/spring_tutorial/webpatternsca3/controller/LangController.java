@@ -11,11 +11,17 @@ import java.util.Locale;
 @Controller
 public class LangController {
 
-
+    /**
+     * Change the language of the page
+     * @param lang the language to change to. Ex: en, fr, de
+     * @param request the request object
+     * @return the page with the new language
+     */
     @GetMapping("/changeLanguage")
-    public String changeLanguage(@RequestParam("lang") String lang,
-                                 HttpServletRequest request)
-    {
+    public String changeLanguage(
+            @RequestParam("lang") String lang,
+            HttpServletRequest request
+    ) {
 
         Locale locale = new Locale(lang);
         LocaleContextHolder.setLocale(locale);

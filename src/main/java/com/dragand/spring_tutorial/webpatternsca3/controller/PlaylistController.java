@@ -120,6 +120,14 @@ public class PlaylistController {
         return "redirect:/playlists";
     }
 
+    /**
+     * Add a song to user's playlist
+     * @param playlistId the playlist ID
+     * @param songId the song ID
+     * @param session the session
+     * @param model the model
+     * @return the redirect URL
+     */
     @PostMapping("/addSongToPlaylist")
     public String addSongToPlaylist(
             @RequestParam(value = "playlistId", required = true) Integer playlistId,
@@ -144,6 +152,14 @@ public class PlaylistController {
         return "redirect:/playlists";
     }
 
+    /**
+     * Remove a song from us playlist
+     * @param playlistId the playlist ID
+     * @param songId the song ID
+     * @param session the session
+     * @param model the model
+     * @return the redirect URL
+     */
     @PostMapping("/removeSongFromPlaylist")
     public String removeSongFromPlaylist(
             @RequestParam(value = "playlistId", required = true) Integer playlistId,

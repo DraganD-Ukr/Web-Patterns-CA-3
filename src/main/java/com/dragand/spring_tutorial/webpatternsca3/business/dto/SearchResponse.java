@@ -7,6 +7,13 @@ import com.dragand.spring_tutorial.webpatternsca3.business.Song;
 
 import java.util.List;
 
+/**
+ * Search response DTO
+ * @param songs
+ * @param artists
+ * @param albums
+ * @param playlists
+ */
 public record SearchResponse(
         List<Song> songs,
         List<Artist> artists,

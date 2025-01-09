@@ -12,6 +12,12 @@ import java.sql.SQLException;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    /**
+     * Handles NullPointerException
+     * @param model Model
+     * @param ex NullPointerException
+     * @return error page
+     */
     @ExceptionHandler(value = NullPointerException.class)
     public String nullPointerHandler(Model model, NullPointerException ex) {
         log.error("NullPointerException occurred: ", ex);
@@ -20,6 +26,12 @@ public class GlobalExceptionHandler {
         return "error";
     }
 
+    /**
+     * Handles any exception
+     * @param model Model
+     * @param ex Exception
+     * @return error page
+     */
     //Global exception handler (for all exceptions including unexpected ones)
     @ExceptionHandler(value = Exception.class)
     public String allOtherExceptionHandler(Model model, Exception ex) {

@@ -3,6 +3,7 @@ package com.dragand.spring_tutorial.webpatternsca3.utils;
 import com.dragand.spring_tutorial.webpatternsca3.business.User;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -13,14 +14,18 @@ import java.time.LocalDateTime;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AuthUtils {
 
     private final HttpServletResponse httpServletResponse;
 
-    public AuthUtils(HttpServletResponse httpServletResponse) {
-        this.httpServletResponse = httpServletResponse;
-    }
-
+    /**
+     * Authenticate a user by checking if they are logged in
+     * @param session the session to check for the user
+     * @param model the model to add an error message to
+     * @return null if the user is authenticated, otherwise redirect to the login page
+     * @throws IOException
+     */
     public String authenticateUser(HttpSession session, Model model) throws IOException {
 
         if (session.getAttribute("loggedInUser") == null) {
@@ -33,6 +38,12 @@ public class AuthUtils {
 
     }
 
+    /**
+     * Check if a user has an active subscription
+     * @param session the session to get the user from
+     * @param redirectAttributes the redirect attributes to add an error message to
+     * @return null if the user has an active subscription, otherwise redirect to the subscription page
+     */
     public String isSubscriptionActive(HttpSession session, RedirectAttributes redirectAttributes) {
 
         User user = (User) session.getAttribute("loggedInUser");

@@ -33,6 +33,14 @@ public class SearchController {
     private final PlaylistSongsDaoImpl playlistSongsDao;
     private final AuthUtils authUtils;
 
+    /**
+     * Search for songs, artists, albums, and playlists
+     * @param query the search query
+     * @param model the model to add the search results to
+     * @param session the session to check if the user is logged in
+     * @param redirectAttributes the redirect attributes to add errors to
+     * @return the search page with the search results
+     */
     @GetMapping("/search")
     public String search(
             @RequestParam(value = "search", required = false) String query,

@@ -16,19 +16,34 @@ public class MySQLDao {
     private Properties properties;
     private Connection conn;
 
+    /**
+     * Default constructor. Loads properties from the default file name(database.properties).
+     */
     public MySQLDao() {
         loadProperties("database.properties"); // Default file name
     }
 
+    /**
+     * Constructor that takes a connection as a parameter.
+     * @param conn - the connection to the database.
+     */
     public MySQLDao(Connection conn){
         this.conn = conn;
     }
 
+    /**
+     * Constructor that takes a properties file name as a parameter.
+     * @param propertiesFilename - the name of the properties file.
+     */
     public MySQLDao(String propertiesFilename){
         properties = new Properties();
         loadProperties(propertiesFilename);
     }
 
+    /**
+     * Get a connection to the database.
+     * @return - the connection to the database.
+     */
     public Connection getConnection(){
         if(conn != null){
             return conn;
@@ -58,16 +73,10 @@ public class MySQLDao {
         return null;
     }
 
-    public void freeConnection(Connection conn){
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            log.error("{}: An SQLException occurred while trying to close the database connection.", LocalDateTime.now());
-            log.error("Error: {}", e.getMessage());
-//            e.printStackTrace();
-        }
-    }
-
+    /**
+     * Load properties from a file.
+     * @param propertiesFilename - the name of the properties file.
+     */
     private void loadProperties(String propertiesFilename) {
         properties = new Properties();
         try (InputStream input = Thread.currentThread()
