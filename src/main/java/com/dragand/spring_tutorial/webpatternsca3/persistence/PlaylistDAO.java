@@ -6,12 +6,22 @@ import com.dragand.spring_tutorial.webpatternsca3.business.*;
 public interface PlaylistDAO {
 //Search query methods
     //get all playlist belonging to the user that have name like the query
+    //get all playlist by user id
+    /**
+     * Retrieve all playlists in the database that belong to the user.
+     *
+     * @param userID the id of the user who created the playlist
+     * @return a list of all playlists in the database that belong to the user
+     */
+    List<Playlist> getPlaylistByUserID(int userID);
     /**
      * Retrieve all playlists in the database that belong to the user and have a name like the query.
      *
      * @param username the username of the user who created the playlist
      * @param query the query to search for in the playlist name
      * @return a list of all playlists in the database that belong to the user and have a name like the query
+     *
+     *
      */
     List<Playlist> getPlaylistByUsernameAndName(String username, String query);
     /**
