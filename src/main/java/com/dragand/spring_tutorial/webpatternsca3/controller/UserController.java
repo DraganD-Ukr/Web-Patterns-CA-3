@@ -103,12 +103,21 @@ public class UserController {
     }
 
 
+    /**
+     * Handle user profile update. Only the fields that have changed will be updated.
+     * @param userUpdateRequest - UserUpdateRequest object with updated user data
+     * @param session - HttpSession object
+     * @param model - Model object
+     * @return - profile.html
+     */
     @PatchMapping("/profile")
     public String updateUser(
             @ModelAttribute("userUpdate") UserUpdateRequest userUpdateRequest,
             HttpSession session,
             Model model
     ) {
+        // Clear previous errors
+        model.asMap().clear();
 
         try {
             authUtils.authenticateUser(session, model);
@@ -119,87 +128,147 @@ public class UserController {
         User user = (User) session.getAttribute("loggedInUser");
 
         // Update only the fields that have changed
-        if (isChanged(userUpdateRequest, user)) {
-            log.info("User with ID: {} updated their profile.", user.getUserID());
-        } else {
-            log.warn("User with ID: {} tried to update their profile with no changes detected.", user.getUserID());
-            model.addAttribute("error", "No changes detected.");
-            return "profile"; // Stay on the profile page
-        }
+        boolean isChanged = isChanged(userUpdateRequest, user, model);
 
+        // If no changes detected, add a general error message
+        if (!isChanged) {
+            model.addAttribute("error", "No changes detected.");
+            log.info("No changes detected for user with ID: {}", user.getUserID());
+        }
 
         // Save the updated user in the database
-        boolean isUpdated = userDAO.updateUser(user);
-
-        if (isUpdated) {
+        if (isChanged && userDAO.updateUser(user)) {
             model.addAttribute("message", "Profile updated successfully.");
             session.setAttribute("loggedInUser", user); // Update session data
-            return "index"; // Redirect to the home page
+        } else if (!isChanged) {
+            // Only add this if there were no changes
+            model.addAttribute("error", "No changes detected.");
         } else {
             model.addAttribute("error", "Profile update failed. Please try again.");
-            return "profile"; // Stay on the profile page
         }
+
+        return "profile";
     }
 
-    private boolean isChanged(UserUpdateRequest userUpdateRequest, User user) {
 
-        boolean isChanged = false;
 
+
+
+
+
+    //    -----------------------------Helper methods--------------------------------
+
+    /**
+     * Check if the user has changed any fields and update the user object accordingly.
+     * @param userUpdateRequest - UserUpdateRequest DTO with updated user data
+     * @param user - User object from the session
+     * @param model - Model object to add error messages
+     * @return - true if any field has changed, false otherwise
+     */
+    private boolean isChanged(UserUpdateRequest userUpdateRequest, User user, Model model) {
+        boolean isChanged;
+
+        // Password validation should be checked first.
+        boolean passwordChanged = validatePasswords(
+                userUpdateRequest.oldPassword(),
+                userUpdateRequest.newPassword(),
+                user,
+                model
+        );
+
+        isChanged = passwordChanged;
+
+        // Now check the other fields and add errors to the model if needed
         if (regexUtils.isValidName(userUpdateRequest.firstName()) &&
                 !userUpdateRequest.firstName().equals(user.getFirstName())
         ) {
             user.setFirstName(userUpdateRequest.firstName());
+            log.debug("First Name of user with ID:{} was different, adding to updated user object", user.getUserID());
             isChanged = true;
+        } else if (userUpdateRequest.firstName() != null && !userUpdateRequest.firstName().equals(user.getFirstName())) {
+            model.addAttribute("errorFirstName", "Invalid or unchanged first name.");
         }
+
         if (regexUtils.isValidName(userUpdateRequest.lastName()) &&
-                !userUpdateRequest.lastName().equals(user.getLastName())) {
+                !userUpdateRequest.lastName().equals(user.getLastName())
+        ) {
             user.setLastName(userUpdateRequest.lastName());
+            log.debug("Last Name of user with ID:{} was different, adding to updated user object", user.getUserID());
             isChanged = true;
+        } else if (userUpdateRequest.lastName() != null && !userUpdateRequest.lastName().equals(user.getLastName())) {
+            model.addAttribute("errorLastName", "Invalid or unchanged last name.");
         }
 
         if (regexUtils.isValidUserName(userUpdateRequest.username()) &&
-                !userUpdateRequest.username().equals(user.getUserName())) {
+                !userUpdateRequest.username().equals(user.getUserName())
+        ) {
             user.setUserName(userUpdateRequest.username());
+            log.debug("Username of user with ID:{} was different, adding to updated user object", user.getUserID());
             isChanged = true;
+        } else if (userUpdateRequest.username() != null && !userUpdateRequest.username().equals(user.getUserName())) {
+            model.addAttribute("errorUsername", "Invalid or unchanged username.");
         }
 
-
-//            Check if the old password matches the one in the database
-            if (hashUtil.matchesOldPassword(userUpdateRequest.oldPassword(), user.getPassword())) {
-//                Update the password
-                if (regexUtils.isValidPassword(userUpdateRequest.newPassword())) {
-                    user.setPassword(hashUtil.hashPassword(userUpdateRequest.newPassword()));
-                    isChanged = true;
-                } else {
-                    log.info("User with id: {} entered an invalid new password.{}", user.getUserID());
-                }
-            } else {
-                log.info("User with id: {} entered incorrect old password.{}", user.getUserID());
-            }
-
-
+        if (!isChanged){
+            model.addAttribute("error", "No changes detected.");
+        }
         return isChanged;
-
     }
 
 
+    /**
+     * Validate the old and new passwords and update the user object if needed.
+     * @param requestOldPass - Old password from the patch request
+     * @param requestNewPass - New password from the patch request
+     * @param user - User object from the session
+     * @param model - Model object to add error messages
+     * @return - true if the password has changed, false otherwise
+     */
+    private boolean validatePasswords(String requestOldPass, String requestNewPass, User user, Model model) {
+
+        if (requestOldPass == null
+                || requestNewPass == null
+                || requestOldPass.isEmpty()
+                || requestNewPass.isEmpty()
+
+        ) {
+            return false;
+        }
+
+        boolean isChanged = false;
+
+        // Check if the current password (in patch request) matches the one in the database (in session)
+        if (hashUtil.verify(requestOldPass, user.getPassword())) {
+
+            // Check if the new password is valid and different from the old password
+            if (regexUtils.isValidPassword(requestNewPass) && !hashUtil.verify(requestNewPass, user.getPassword())) {
+                // Hash the new password and set it in the user object
+                user.setPassword(hashUtil.hashPassword(requestNewPass));
+                log.debug("Password of user with ID:{} was different, adding to updated user object", user.getUserID());
+                isChanged = true;
+            } else {
+                model.addAttribute("errorPassword", "Invalid new password or it is not different from the old one.");
+                log.info("User with id: {} entered an invalid new password or it is not different from old one.", user.getUserID());
+            }
+        } else {
+            model.addAttribute("errorOldPassword", "Incorrect old password.");
+            log.info("User with id: {} entered incorrect old password.", user.getUserID());
+        }
+
+        return isChanged;
+    }
 
 
+    /**
+     * Validate the payment details.
+     * @param cardNumber - Credit card number
+     * @param expiryDate - Expiry date of the card
+     * @param cvv - CVV of the card
+     * @return - true if the payment details are valid, false otherwise
+     */
     private boolean validatePayment(String cardNumber, String expiryDate, String cvv) {
-        // Validate the credit card number with regex
-        String cardRegex = "^[0-9]{16}$";
-        if (!cardNumber.matches(cardRegex)) {
-            return false;
-        }
-
-        // Validate the expiry date with regex
-        String expiryRegex = "^(0[1-9]|1[0-2])\\/?([0-9]{2})$";
-        if (!expiryDate.matches(expiryRegex)) {
-            return false;
-        }
-
-        // Validate the CVV with regex
-        String cvvRegex = "^[0-9]{3}$";
-        return cvv.matches(cvvRegex);
+        return regexUtils.isValidCreditCard(cardNumber)
+                && regexUtils.isValidExpiryDate(expiryDate)
+                && regexUtils.isValidCVV(cvv);
     }
 }
