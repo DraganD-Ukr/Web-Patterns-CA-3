@@ -84,8 +84,7 @@ public class PlaylistSongsDaoImpl extends MySQLDao implements PlaylistSongsDAO{
      */
     @Override
     public boolean doesSongExistInUserPlaylists(int songId, int userId) {
-        String userName = new UserDaoImpl().getUserById(userId).getUserName();
-        List<Playlist> userPlaylists = new PlaylistDaoImpl().getPlaylistByUsername(userName);
+        List<Playlist> userPlaylists = new PlaylistDaoImpl().getPlaylistByUserID(userId);
 
         for (Playlist playlist : userPlaylists) {
             if(doesSongExistInPlaylist(songId, playlist.getPlaylistId())){
@@ -175,35 +174,6 @@ public class PlaylistSongsDaoImpl extends MySQLDao implements PlaylistSongsDAO{
         }
     }
 
-
-
-    private Song mapSongFromResultSet(ResultSet rs) throws SQLException {
-        return new Song(
-                rs.getInt("songID"),
-                rs.getString("title"),
-                rs.getInt("albumID"),
-                rs.getInt("artistID"),
-                rs.getTime("length").toLocalTime(),
-                rs.getInt("ratingCount"),
-                rs.getDouble("averageRating"),
-                rs.getInt("ratingsSum")
-        );
-    }
-
-    /**
-     * Maps all rows of the ResultSet to a list of Song objects.
-     *
-     * @param rs The ResultSet containing multiple rows of song data.
-     * @return A list of Song objects.
-     * @throws SQLException If an SQL error occurs while mapping the data.
-     */
-    private List<Song> mapSongsFromResultSet(ResultSet rs) throws SQLException {
-        List<Song> songList = new ArrayList<>();
-        while (rs.next()) {
-            songList.add(mapSongFromResultSet(rs));
-        }
-        return songList;
-    }
 
     //Logging methods maybe in the future could have other functionalities
     /**
