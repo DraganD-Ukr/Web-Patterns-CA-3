@@ -23,9 +23,11 @@
       const userName = document.getElementById("userName").value.trim();
 
       const nameRegex = /^(?=.*[A-Z])(?=.*[a-z])[A-Za-z\d\s]+$/;
-      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+      const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/; // 1 capital, 1 number, 1 special, 8+ chars
       const userNameRegex = /^[a-zA-Z0-9_]{3,20}$/;
 
+
+      // Name Validation
       if (!nameRegex.test(firstName)) {
         alert("#{register.firstname.error}");
         return false;
@@ -36,6 +38,7 @@
         return false;
       }
 
+      // Password Validation
       if (!passwordRegex.test(password)) {
         alert("#{register.password.error}");
         return false;
@@ -66,6 +69,7 @@
         </div>
         <div class="card-body">
           <form action="/register" method="post" onsubmit="return validateRegisterForm();">
+            <!-- User Information -->
             <div class="row mb-3">
               <div class="col-md-6">
                 <label for="firstName" class="form-label" th:text="#{register.firstname.label}"></label>
@@ -94,6 +98,8 @@
                 </button>
               </div>
             </div>
+
+            <!-- Credit Card Information -->
             <div class="mb-3">
               <label for="cardNumber" class="form-label" th:text="#{register.cardnumber.label}"></label>
               <input type="text" id="cardNumber" name="cardNumber" class="form-control" th:placeholder="#{register.cardnumber.placeholder}" maxlength="16" required>
@@ -108,15 +114,19 @@
                 <input type="text" id="cvv" name="cvv" class="form-control" th:placeholder="#{register.cvv.placeholder}" maxlength="3" required>
               </div>
             </div>
+
+            <!-- Submit Button -->
             <div class="d-grid">
               <button type="submit" class="btn btn-success" th:text="#{register.button.label}"></button>
             </div>
           </form>
         </div>
         <div class="card-footer">
+          <!-- Display error message -->
           <div th:if="${error}" class="alert alert-danger mt-3" role="alert">
             <span th:text="${error}"></span>
           </div>
+          <!-- Display success message -->
           <div th:if="${message}" class="alert alert-success mt-3" role="alert">
             <span th:text="${message}"></span>
           </div>

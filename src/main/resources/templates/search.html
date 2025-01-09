@@ -36,6 +36,13 @@
                     onclick="showFilter('songs-section')">
                 Songs
             </button>
+            <!-- Playlist Filter -->
+            <button type="button"
+                    class="btn btn-outline-success px-4 py-2 rounded-pill mx-2 filter-button"
+                    data-filter="playlists-section"
+                    onclick="showFilter('playlists-section')">
+                Playlist
+            </button>
             <!-- Artists Filter -->
             <button type="button"
                     class="btn btn-outline-success px-4 py-2 rounded-pill mx-2 filter-button"
@@ -62,20 +69,7 @@
     <div id="songs-section" class="filter-section" th:if="${searchResponse.songs != null}">
         <h4 class="mb-4">Songs</h4>
         <div th:if="${#lists.size(searchResponse.songs) > 0}">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 mb-5">
-                <div class="col" th:each="song : ${searchResponse.songs}">
-                    <div class="card h-100">
-                        <img src="/song_cover_placeholder.jpg" class="card-img-top img-fluid" alt="Song Image" style="max-width: 150px; max-height: 150px; margin: auto;">
-                        <div class="card-body text-center">
-                            <h6 class="card-title" th:text="${song.title}"></h6>
-                            <p class="card-text small" th:text="'Length: ' + ${song.length}"></p>
-                            <p class="card-text small" th:text="'Average Rating: ' + ${song.averageRating}"></p>
-                            <p class="card-text small" th:text="'Rating Count: ' + ${song.ratingCount}"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            <div th:include="fragments/songCards :: cards" th:with="songs=${searchResponse.songs}"></div>        </div>
         <div th:if="${#lists.size(searchResponse.songs) == 0}">
             <p>No songs found for: <span th:text="${searchQuery}"></span></p>
         </div>
@@ -84,7 +78,36 @@
     <!-- Playlists Section -->
     <div id="playlists-section" class="filter-section" style="display: none;">
         <h4 class="mb-4">Playlists</h4>
-        <!-- Add your playlists content here -->
+        <div th:if="${searchResponse.playlists != null}">
+            <div th:if="${#lists.size(searchResponse.playlists) > 0}">
+                <div class="list-group">
+                    <div th:each="playlist : ${searchResponse.playlists}">
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong th:text="${playlist.name}"></strong>
+                                </div>
+                                <form action="/playlistsSearchView" method="get" style="display:inline;">
+                                    <input type="hidden" name="playlistId" th:value="${playlist.playlistId}" />
+                                    <input type="hidden" name="publicQuery" th:value="${searchQuery}">
+                                    <button type="submit"
+                                            th:classappend="${selectedPlaylistId == playlist.playlistId} ? 'btn btn-danger' : 'btn btn-primary'"
+                                            th:text="${selectedPlaylistId == playlist.playlistId} ? 'Close' : 'View Songs'">
+                                    </button>
+                                </form>
+                            </div>
+                            <div th:if="${songs != null and selectedPlaylistId == playlist.playlistId}">
+                                <div th:replace="~{fragments/songCards :: cards}"></div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${#lists.size(searchResponse.playlists) == 0}">
+                <p>No playlists found for: <span th:text="${searchQuery}"></span></p>
+            </div>
+        </div>
     </div>
 
     <!-- Artists Section -->

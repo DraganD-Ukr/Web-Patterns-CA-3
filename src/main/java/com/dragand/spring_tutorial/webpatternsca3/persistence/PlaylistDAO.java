@@ -5,6 +5,21 @@ import com.dragand.spring_tutorial.webpatternsca3.business.*;
 
 public interface PlaylistDAO {
 //Search query methods
+    //get all playlist belonging to the user that have name like the query
+    /**
+     * Retrieve all playlists in the database that belong to the user and have a name like the query.
+     *
+     * @param username the username of the user who created the playlist
+     * @param query the query to search for in the playlist name
+     * @return a list of all playlists in the database that belong to the user and have a name like the query
+     */
+    List<Playlist> getPlaylistByUsernameAndName(String username, String query);
+    /**
+     * Retrieve all playlists in the database that are public.
+     *
+     * @return a list of all playlists in the database
+     */
+    List<Playlist> getAllPublicPlaylists();
     /**
      * Retrieve a playlist by the username of the user who created it.
      *
@@ -28,6 +43,17 @@ public interface PlaylistDAO {
      * @return the playlist with the given name.
      */
     Playlist getPlaylistByName(String name);
+
+    //retrieve all playlists that have a name and if they are public or not
+    /**
+     * Retrieve all playlists in the database that have a name like the query and are public or not.
+     *
+     * @param name the name of the playlist to search for
+     * @param isPublic the boolean value to determine if the playlist is public or not
+     * @return a list of all playlists in the database that have a name like the query and are public or not
+     */
+    List<Playlist> getAllPlaylistbyName(String name, boolean isPublic);
+
 
 //Database Data Entry/Edit query
     /**
