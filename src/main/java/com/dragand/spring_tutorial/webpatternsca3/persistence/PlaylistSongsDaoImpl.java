@@ -35,17 +35,21 @@ public class PlaylistSongsDaoImpl extends MySQLDao implements PlaylistSongsDAO{
     @Override
     public List<Song> getSongsInPlaylistByPlaylistId(int playlistId) {
         List<Song> songs = new ArrayList<>();
+        SongDaoImpl songDao = new SongDaoImpl();
 
-        String query = "SELECT * FROM playlistsongs WHERE playlistID = ?";
+        String query = "SELECT songID FROM playlistsongs WHERE playlistID = ?";
 
         try (Connection con = super.getConnection();
              var ps = con.prepareStatement(query)) {
             ps.setInt(1, playlistId);
+
             try (ResultSet rs = ps.executeQuery()) {
-                songs = mapSongsFromResultSet(rs);
+                while (rs.next()){
+                    songs.add(songDao.findSongById(rs.getInt("songID")));
+                }
             }
         } catch (SQLException e) {
-            logError("An error occurred while retrieving the songs in the playlist with id: " + playlistId, e);
+            logError("An error occurred while retrieving songs from the playlist with id: " + playlistId, e);
         }
 
         return songs;
