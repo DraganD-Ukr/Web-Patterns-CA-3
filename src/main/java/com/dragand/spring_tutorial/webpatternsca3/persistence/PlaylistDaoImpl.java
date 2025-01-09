@@ -32,7 +32,36 @@ public class PlaylistDaoImpl extends MySQLDao implements PlaylistDAO{
     //Search query methods
 
     /**
-     * Retrieve all playlists in the database that are public.
+     * Retrieve all playlists in the database that belong to the user and have a name like the query.
+     * combines the username and query to search for the playlists in the database
+     *
+     * @param username the username of the user who created the playlist
+     * @param query    the query to search for in the playlist name
+     * @return a list of all playlists in the database that belong to the user and have a name like the query
+     */
+    @Override
+    public List<Playlist> getPlaylistByUsernameAndName(String username, String query) {
+        List<Playlist> playlists = new ArrayList<>();
+        String queryStr = "SELECT * FROM playlists WHERE userID = ? AND name LIKE ?";
+
+        try(Connection con = super.getConnection();
+            PreparedStatement ps = con.prepareStatement(queryStr)) {
+            ps.setInt(1, new UserDaoImpl().getUserByName(username).getUserID());
+            ps.setString(2, "%" + query + "%");
+            try(ResultSet rs = ps.executeQuery()) {
+                playlists = mapToPlaylists(rs);
+            }
+        } catch (SQLException e) {
+            logError("SQLException occurred while retrieving playlists by username and name", e);
+        }
+
+        return playlists;
+    }
+
+    /**
+     * Retrieve all playlists in the database that are public
+     * This method accomplishes this by using a prepared statement to query the database
+     * uses the isPublic column to determine if the playlist is public or not
      *
      * @return a list of all playlists in the database
      */
@@ -133,6 +162,38 @@ public class PlaylistDaoImpl extends MySQLDao implements PlaylistDAO{
         }
 
         return playlist;
+    }
+
+    /**
+     * Retrieve all playlists in the database that have a name like the query and are public or not.
+     *  This method accomplishes this by using a prepared statement to query the database
+     *  combines the name and isPublic to search for the playlists in the database
+     *
+     * @param name     the name of the playlist to search for
+     * @param isPublic the boolean value to determine if the playlist is public or not
+     * @return a list of all playlists in the database that have a name like the query and are public or not
+     */
+    @Override
+    public List<Playlist> getAllPlaylistbyName(String name, boolean isPublic) {
+        List<Playlist> playlists = new ArrayList<>();
+        String query = "SELECT * FROM playlists WHERE name LIKE ? AND isPublic = ?";
+
+        try(Connection con = super.getConnection();
+            PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, "%" + name + "%");
+            if(isPublic){
+                ps.setInt(2, 1);
+            } else {
+                ps.setInt(2, 0);
+            }
+            try(ResultSet rs = ps.executeQuery()) {
+                playlists = mapToPlaylists(rs);
+            }
+        } catch (SQLException e) {
+            logError("SQLException occurred while retrieving all playlists by name", e);
+        }
+
+        return playlists;
     }
 
     //Database Data Entry/Edit query
