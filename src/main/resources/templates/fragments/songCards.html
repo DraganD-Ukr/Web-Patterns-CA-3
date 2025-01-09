@@ -7,7 +7,14 @@
                 <div class="card-body text-center">
                     <h6 class="card-title" th:text="${song.title}"></h6>
                     <p class="card-text small" th:text="'Length: ' + ${song.length}"></p>
-                    <p class="card-text small" th:text="'Average Rating: ' + ${song.averageRating}"></p>
+
+                    <!-- Star Rating -->
+                    <div class="d-flex justify-content-center mb-2">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}">
+                            <i class="fa" th:classappend="${i <= song.averageRating} ? 'fa-star text-warning' : 'fa-star text-muted'"></i>
+                        </span>
+                    </div>
+
                     <p class="card-text small" th:text="'Rating Count: ' + ${song.ratingCount}"></p>
 
                     <!-- Add to Playlist Button with Dropdown -->
