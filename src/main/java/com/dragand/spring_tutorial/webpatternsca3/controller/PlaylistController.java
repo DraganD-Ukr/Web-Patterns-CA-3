@@ -1,10 +1,12 @@
 package com.dragand.spring_tutorial.webpatternsca3.controller;
 
 import com.dragand.spring_tutorial.webpatternsca3.business.Playlist;
+import com.dragand.spring_tutorial.webpatternsca3.business.Rating;
 import com.dragand.spring_tutorial.webpatternsca3.business.Song;
 import com.dragand.spring_tutorial.webpatternsca3.persistence.PlaylistDAO;
 import com.dragand.spring_tutorial.webpatternsca3.persistence.PlaylistSongsDaoImpl;
 import com.dragand.spring_tutorial.webpatternsca3.business.User;
+import com.dragand.spring_tutorial.webpatternsca3.persistence.RatingDAO;
 import com.dragand.spring_tutorial.webpatternsca3.utils.AuthUtils;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -27,6 +31,7 @@ public class PlaylistController {
     private final PlaylistDAO playlistDao;
     private final PlaylistSongsDaoImpl playlistSongsDao;
     private final AuthUtils authUtils;
+    private final RatingDAO ratingDao;
 
     @GetMapping("/create-playlist")
     public String createPlaylist(
@@ -48,6 +53,7 @@ public class PlaylistController {
         } else {
             redirectAttributes.addFlashAttribute("error", "Playlist name cannot be empty");
         }
+        getUserRatings(session, redirectAttributes);
         return "redirect:/playlists";
     }
 
@@ -96,13 +102,13 @@ public class PlaylistController {
                 selectedPlaylistId = playlistId;
             }
         }
-
+        session.setAttribute("currentPage", "playlists");
         // Add data to the model
         model.addAttribute("userPlaylists", userPlaylists);
         model.addAttribute("publicPlaylists", publicPlaylists);
         model.addAttribute("songs", songs); // Add the songs to the model
         model.addAttribute("selectedPlaylistId", selectedPlaylistId); // Add selectedPlaylistId to the model
-
+        getUserRatings(session, model);
         return "playlists"; // Return the Thymeleaf template
     }
     @PostMapping("/rename-playlist")
@@ -117,6 +123,7 @@ public class PlaylistController {
         } else {
             redirectAttributes.addFlashAttribute("error", "Playlist name cannot be empty");
         }
+        getUserRatings(session, redirectAttributes);
         return "redirect:/playlists";
     }
 
@@ -148,7 +155,7 @@ public class PlaylistController {
         } else {
             model.addAttribute("error", "Failed to add song to playlist");
         }
-
+        getUserRatings(session, model);
         return "redirect:/playlists";
     }
 
@@ -180,7 +187,25 @@ public class PlaylistController {
         } else {
             model.addAttribute("error", "Failed to remove song from playlist");
         }
-
+        getUserRatings(session, model);
         return "redirect:/playlists";
+    }
+
+
+    private String getUserRatings(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user != null) {
+            List<Rating> userRatings = ratingDao.getRatingsByUserID(user.getUserID());
+
+            // Create a map of Song ID to Rating Value for the current user
+            Map<Integer, Integer> userRatingsMap = userRatings.stream()
+                    .collect(Collectors.toMap(Rating::getSongID, Rating::getRatingValue));
+
+            // Add a map of Song ID to Rating Value for the current user
+            model.addAttribute("userRatings", userRatingsMap);
+
+            log.info("Fetched {} ratings for user {}", userRatings.size(), user.getUserName());
+        }
+        return "playlists";
     }
 }

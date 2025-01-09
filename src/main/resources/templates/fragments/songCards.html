@@ -9,14 +9,40 @@
                     <p class="card-text small" th:text="'Length: ' + ${song.length}"></p>
 
                     <!-- Star Rating -->
+                    <p>Main star Ratting</p>
                     <div class="d-flex justify-content-center mb-2">
                         <span th:each="i : ${#numbers.sequence(1, 5)}">
                             <i class="fa" th:classappend="${i <= song.averageRating} ? 'fa-star text-warning' : 'fa-star text-muted'"></i>
                         </span>
                     </div>
 
-                    <p class="card-text small" th:text="'Rating Count: ' + ${song.ratingCount}"></p>
+                    <p th:if="${userRatings[song.songID] != null}">  Your star Ratting</p>
+                    <div class="d-flex justify-content-center mb-2">
+                        <span th:each="i : ${#numbers.sequence(1, 5)}">
+                            <i th:if="${userRatings[song.songID] != null}" class="fa" th:classappend="${i <= userRatings[song.songID]} ? 'fa-star text-warning' : 'fa-star text-muted'"></i>
+                        </span>
+                    </div>
 
+                    <!-- Rating Dropdown -->
+                    <div class="dropdown mt-3">
+                        <button class="btn btn-success dropdown-toggle"
+                                type="button"
+                                id="rateSongDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                th:disabled="${userRatings[song.songID] != null}">
+                            <span th:text="${userRatings[song.songID] != null} ? 'Rated' : 'Rate'"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="rateSongDropdown">
+                            <li th:each="i : ${#numbers.sequence(1, 5)}">
+                                <form action="/rateSong" method="post" class="dropdown-item">
+                                    <input type="hidden" name="songId" th:value="${song.songID}" />
+                                    <input type="hidden" name="ratingValue" th:value="${i}" />
+                                    <button type="submit" class="btn btn-link p-0 text-start" th:text="|Rate ${i}|"></button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                     <!-- Add to Playlist Button with Dropdown -->
                     <div class="dropdown mt-3">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="addToPlaylistDropdown" data-bs-toggle="dropdown" aria-expanded="false">

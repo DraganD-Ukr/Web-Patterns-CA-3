@@ -101,23 +101,5 @@ public interface SongDAO {
      */
     boolean deleteSong(int id);
 
-    // Extended Functionality
 
-    //Top Rated songs for dropdowns with list limiter
-    /**
-     * Gets the top rated songs from the database
-     *
-     * @param limit The number of songs to get
-     * @return A list of {@link Song} objects
-     */
-    List<Song> getLimitedSongsByName(String name, int limit);
-
-    //get all songs with limit
-    /**
-     * Gets all songs from the database with a limit
-     *
-     * @param limit The number of songs to get
-     * @return A list of {@link Song} objects
-     */
-    List<Song> getLimitedSongs(int limit);
 }
