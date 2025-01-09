@@ -21,12 +21,6 @@ public interface PlaylistDAO {
      */
     List<Playlist> getAllPublicPlaylists();
     /**
-     * Retrieve all playlists in the database that are public.
-     *
-     * @return a list of all playlists in the database
-     */
-    List<Playlist> getAllPublicPlaylists();
-    /**
      * Retrieve a playlist by the username of the user who created it.
      *
      * @param username the username of the user who created the playlist.
