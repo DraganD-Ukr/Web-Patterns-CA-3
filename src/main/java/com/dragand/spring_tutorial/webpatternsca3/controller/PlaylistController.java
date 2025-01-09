@@ -2,12 +2,13 @@ package com.dragand.spring_tutorial.webpatternsca3.controller;
 
 import com.dragand.spring_tutorial.webpatternsca3.business.Playlist;
 import com.dragand.spring_tutorial.webpatternsca3.business.Song;
-import com.dragand.spring_tutorial.webpatternsca3.business.dto.SearchResponse;
 import com.dragand.spring_tutorial.webpatternsca3.persistence.PlaylistDAO;
 import com.dragand.spring_tutorial.webpatternsca3.persistence.PlaylistSongsDaoImpl;
 import com.dragand.spring_tutorial.webpatternsca3.business.User;
+import com.dragand.spring_tutorial.webpatternsca3.utils.AuthUtils;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,15 +16,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Controller
 public class PlaylistController {
 
     private final PlaylistDAO playlistDao;
     private final PlaylistSongsDaoImpl playlistSongsDao;
+    private final AuthUtils authUtils;
 
     @GetMapping("/create-playlist")
     public String createPlaylist(
@@ -114,6 +117,30 @@ public class PlaylistController {
         } else {
             redirectAttributes.addFlashAttribute("error", "Playlist name cannot be empty");
         }
+        return "redirect:/playlists";
+    }
+
+    @PostMapping("/addSongToPlaylist")
+    public String addSongToPlaylist(
+            @RequestParam(value = "playlistId", required = true) Integer playlistId,
+            @RequestParam(value = "songId", required = true) Integer songId,
+            HttpSession session,
+            Model model
+    ) {
+        try {
+            authUtils.authenticateUser(session, model);
+        } catch (IOException e) {
+            log.error("Failed to authenticate user", e);
+        }
+
+        boolean result = playlistSongsDao.addSongToPlaylist(playlistId, songId);
+
+        if (result) {
+            model.addAttribute("success", "Song added to playlist");
+        } else {
+            model.addAttribute("error", "Failed to add song to playlist");
+        }
+
         return "redirect:/playlists";
     }
 

@@ -1,5 +1,5 @@
 <!-- Display Songs in Card Format -->
-<div th:fragment="cards" >
+<div th:fragment="cards">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         <div class="col" th:each="song : ${songs}">
             <div class="card h-100">
@@ -9,6 +9,22 @@
                     <p class="card-text small" th:text="'Length: ' + ${song.length}"></p>
                     <p class="card-text small" th:text="'Average Rating: ' + ${song.averageRating}"></p>
                     <p class="card-text small" th:text="'Rating Count: ' + ${song.ratingCount}"></p>
+
+                    <!-- Add to Playlist Button with Dropdown -->
+                    <div class="dropdown mt-3">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="addToPlaylistDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Add to Playlist
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="addToPlaylistDropdown">
+                            <li th:each="playlist : ${userPlaylists}">
+                                <form action="/addSongToPlaylist" method="post" class="dropdown-item">
+                                    <input type="hidden" name="songId" th:value="${song.songID}" />
+                                    <input type="hidden" name="playlistId" th:value="${playlist.playlistId}" />
+                                    <button type="submit" class="btn btn-link p-0 text-start" th:text="${playlist.name}"></button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
