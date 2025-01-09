@@ -63,7 +63,10 @@
                 </div>
                 <!-- Display songs within the playlist if playlistSongs is available -->
                 <div th:if="${songs != null and selectedPlaylistId == playlist.playlistId}" style="padding-bottom: 1em;">
-                    <div th:replace="~{fragments/songCards :: cards}"></div>
+                    <!-- Pass playlistId and showRemoveButton to the fragment -->
+                    <div th:replace="~{fragments/songCards :: cards(${playlist.playlistId}, true)}">
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -92,7 +95,7 @@
                     </form>
                 </div>
                 <div th:if="${songs != null and selectedPlaylistId == playlist.playlistId}" style="padding-bottom: 1em;">
-                    <div th:replace="~{fragments/songCards :: cards}"></div>
+                    <div th:replace="~{fragments/songCards :: cards(playlistId=${selectedPlaylistId}, showRemoveButton=true)}"></div>
                 </div>
             </div>
         </div>

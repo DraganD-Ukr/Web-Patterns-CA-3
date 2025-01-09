@@ -27,7 +27,9 @@
     <h5>Search results for: <span th:text="${searchQuery}"></span></h5>
   </div>
 
-  <div th:include="fragments/songCards :: cards"></div>
+  <div th:replace="~{fragments/songCards :: cards(null, false)}"></div>
+
+
 </div>
 
 <!-- Bootstrap JS -->

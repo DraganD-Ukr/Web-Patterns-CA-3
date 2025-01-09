@@ -144,4 +144,27 @@ public class PlaylistController {
         return "redirect:/playlists";
     }
 
+    @PostMapping("/removeSongFromPlaylist")
+    public String removeSongFromPlaylist(
+            @RequestParam(value = "playlistId", required = true) Integer playlistId,
+            @RequestParam(value = "songId", required = true) Integer songId,
+            HttpSession session,
+            Model model
+    ) {
+        try {
+            authUtils.authenticateUser(session, model);
+        } catch (IOException e) {
+            log.error("Failed to authenticate user", e);
+        }
+
+        boolean result = playlistSongsDao.removeSongFromPlaylist(playlistId, songId);
+
+        if (result) {
+            model.addAttribute("success", "Song removed from playlist");
+        } else {
+            model.addAttribute("error", "Failed to remove song from playlist");
+        }
+
+        return "redirect:/playlists";
+    }
 }

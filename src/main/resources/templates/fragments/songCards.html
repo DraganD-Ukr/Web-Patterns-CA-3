@@ -1,5 +1,5 @@
-<!-- Display Songs in Card Format -->
-<div th:fragment="cards">
+<!-- Song Cards Fragment -->
+<div th:fragment="cards(playlistId, showRemoveButton)">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         <div class="col" th:each="song : ${songs}">
             <div class="card h-100">
@@ -31,6 +31,15 @@
                                 </form>
                             </li>
                         </ul>
+                    </div>
+
+                    <!-- Conditionally Show Remove Button -->
+                    <div th:if="${showRemoveButton}">
+                        <form action="/removeSongFromPlaylist" method="post">
+                            <input type="hidden" name="songId" th:value="${song.songID}" />
+                            <input type="hidden" name="playlistId" th:value="${playlistId}" />
+                            <button type="submit" class="btn btn-danger mt-2">Remove from Playlist</button>
+                        </form>
                     </div>
                 </div>
             </div>
