@@ -1,5 +1,7 @@
 package com.dragand.spring_tutorial.webpatternsca3.persistence;
 
+import com.dragand.spring_tutorial.webpatternsca3.business.Album;
+import com.dragand.spring_tutorial.webpatternsca3.business.Artist;
 import com.dragand.spring_tutorial.webpatternsca3.business.Song;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -129,8 +131,11 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
     @Override
     public List<Song> findAllSongsFromArtist(String artist) {
         //uses method from artistDao implementation to maintain Dao integrity.
-        int artistId= new ArtistDaoImpl().getArtistByName(artist).getArtistId();
-
+        Artist ar = new ArtistDaoImpl().getArtistByName(artist);
+        if(ar==null){
+            return new ArrayList<>();
+        }
+        int artistId = ar.getArtistId();
         String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum " +
                 "FROM Songs WHERE artistID = ?";
 
@@ -180,8 +185,11 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
     @Override
     public List<Song> findAllFromAlbumByName(String albumName) {
         //uses method from albumDao implementation to maintain Dao integrity.
-        int albumId= new AlbumDaoImpl().getAlbumByName(albumName).getAlbumId();
-
+        Album al = new AlbumDaoImpl().getAlbumByName(albumName);
+        if(al==null){
+            return new ArrayList<>();
+        }
+        int albumId = al.getAlbumId();
         String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum " +
                 "FROM Songs WHERE albumID = ?";
         try (Connection con = super.getConnection();
@@ -273,46 +281,6 @@ public class SongDaoImpl extends MySQLDao implements SongDAO{
      * @param limit The maximum number of songs to return.
      * @return A list of Song objects matching the name, limited to the specified number.
      */
-    @Override
-    public List<Song> getLimitedSongsByName(String name, int limit) {
-        String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum " +
-                "FROM Songs WHERE title LIKE ? LIMIT ?";
-        try (Connection con = super.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, "%" + name + "%"); // Case-insensitive partial match
-            ps.setInt(2, limit); // Set the maximum number of results to return
-            try (ResultSet rs = ps.executeQuery()) {
-                return mapSongsFromResultSet(rs); // Reuse existing mapping method
-            }
-        } catch (SQLException e) {
-            logError("An error occurred while fetching a limited number of songs by name", e);
-        }
-        return new ArrayList<>();
-    }
-
-    /**
-     * Gets all songs from the database with a limit
-     * This method fetches a limited number of songs from the Songs table.
-     * using limit clause in SQL
-     *
-     * @param limit The number of songs to get
-     * @return A list of {@link Song} objects
-     */
-    @Override
-    public List<Song> getLimitedSongs(int limit) {
-        String sql = "SELECT songID, title, albumID, artistID, length, ratingCount, averageRating, ratingsSum " +
-                "FROM Songs LIMIT ?";
-        try (Connection con = super.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, limit);
-            try (ResultSet rs = ps.executeQuery()) {
-                return mapSongsFromResultSet(rs);
-            }
-        } catch (SQLException e) {
-            logError("An error occurred while fetching a limited number of songs", e);
-        }
-        return new ArrayList<>();
-    }
 
 //Refactor methods (these methods are used in case of repetitive code from previous application)
     /**
