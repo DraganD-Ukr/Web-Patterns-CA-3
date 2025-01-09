@@ -22,6 +22,27 @@ public interface PlaylistSongsDAO {
      */
     List<Song> getSongsInPlaylistByPlaylistName(String playlistName);
 
+    //does song exist in list of playlists belonging to user
+    /**
+     * Check if a song exists in a list of playlists belonging to a user
+     *
+     * @param songId the id of the song to check for
+     * @param userId the id of the user to check for
+     * @return {@code true} if the song exists in a playlist belonging to the user, if not {@code false}
+     */
+    boolean doesSongExistInUserPlaylists(int songId, int userId);
+
+
+    //does song exist in playlist
+
+    /**
+     * Check if a song exists in a playlist
+     *
+     * @param songId the id of the song to check for
+     * @param playlistId the id of the playlist to check for
+     * @return {@code true} if the song exists in the playlist, if not {@code false}
+     */
+    boolean doesSongExistInPlaylist(int songId, int playlistId);
     //Database Data Entry/Edit query
     /**
      * Adds a song to a playlist

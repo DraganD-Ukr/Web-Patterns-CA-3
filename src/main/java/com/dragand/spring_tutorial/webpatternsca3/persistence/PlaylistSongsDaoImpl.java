@@ -1,5 +1,6 @@
 package com.dragand.spring_tutorial.webpatternsca3.persistence;
 
+import com.dragand.spring_tutorial.webpatternsca3.business.Playlist;
 import com.dragand.spring_tutorial.webpatternsca3.business.Song;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
@@ -71,6 +72,55 @@ public class PlaylistSongsDaoImpl extends MySQLDao implements PlaylistSongsDAO{
 
         return getSongsInPlaylistByPlaylistId(playlistId);
     }
+
+    /**
+     * Check if a song exists in a list of playlists belonging to a user
+     * This method accomplishes this by first obtaining a list of playlists belonging to the user
+     * then checking if the song exists in any of the playlists using the doesSongExistInPlaylist method
+     *
+     * @param songId the id of the song to check for
+     * @param userId the id of the user to check for
+     * @return {@code true} if the song exists in a playlist belonging to the user, if not {@code false}
+     */
+    @Override
+    public boolean doesSongExistInUserPlaylists(int songId, int userId) {
+        String userName = new UserDaoImpl().getUserById(userId).getUserName();
+        List<Playlist> userPlaylists = new PlaylistDaoImpl().getPlaylistByUsername(userName);
+
+        for (Playlist playlist : userPlaylists) {
+            if(doesSongExistInPlaylist(songId, playlist.getPlaylistId())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if a song exists in a playlist using the prepared statement
+     * Compares the songId and playlistId to the songId and playlistId in the playlistsongs table
+     *
+     * @param songId     the id of the song to check for
+     * @param playlistId the id of the playlist to check for
+     * @return {@code true} if the song exists in the playlist, if not {@code false}
+     */
+    @Override
+    public boolean doesSongExistInPlaylist(int songId, int playlistId) {
+        String query = "SELECT * FROM playlistsongs WHERE playlistID = ? AND songID = ?";
+
+        try (Connection con = super.getConnection();
+             var ps = con.prepareStatement(query)) {
+            ps.setInt(1, playlistId);
+            ps.setInt(2, songId);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            logError("An error occurred while checking if the song with id: " + songId + " exists in the playlist with id: " + playlistId, e);
+            return false;
+        }
+    }
+
 
     //Database Data Entry/Edit methods
 
