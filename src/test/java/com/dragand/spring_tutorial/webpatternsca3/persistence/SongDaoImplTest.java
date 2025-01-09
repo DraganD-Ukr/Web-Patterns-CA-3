@@ -12,7 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * @author Aloysius Wilfred Pacheco D00253302
+ * Test class for SongDaoImpl.
+ * to test all database operations for the song table
+ */
 class SongDAOImplTest {
     private static SongDaoImpl songDAO;
     /**

@@ -93,6 +93,7 @@
                                 th:text="${selectedPlaylistId == playlist.playlistId} ? 'Close' : 'View Songs'">
                         </button>
                     </form>
+
                 </div>
                 <div th:if="${songs != null and selectedPlaylistId == playlist.playlistId}" style="padding-bottom: 1em;">
                     <div th:replace="~{fragments/songCards :: cards(playlistId=${selectedPlaylistId}, showRemoveButton=true)}"></div>
